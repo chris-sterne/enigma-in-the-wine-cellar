@@ -1,0 +1,16 @@
+-------------------------
+ENIGMA IN THE WINE CELLAR
+-------------------------
+
+This is an exploration puzzle game played from a first-person point of view.
+Explore rooms and passages to find hidden items.  The original version
+of this game ran on the Palm OS platform.  This version is for Linux OS.
+
+AUTOTOOLS BUILD PACKAGE
+
+The shell command './configure && make' should configure the build system
+and then build this package.  No installation is done.  The resulting binary
+file must be run within the src directory using the shell commands:
+
+cd src
+./enigma-in-the-wine-celler

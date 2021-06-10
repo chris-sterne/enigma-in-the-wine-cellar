@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Resource files for HelpView class GResource bundle -->
+<gresources>
+  <gresource prefix="/org/chris_sterne/enigma-in-the-wine-cellar">
+    <file preprocess="xml-stripblanks">HelpView.ui</file>
+    <file>HelpView.txt</file>
+  </gresource>
+</gresources>

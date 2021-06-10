@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Resource files for Application class GResource bundle -->
+<gresources>
+  <gresource prefix="/org/chris_sterne/enigma-in-the-wine-cellar">
+    <file preprocess="xml-stripblanks">Application.ui</file>
+    <file>Alert.png</file>
+  </gresource>
+</gresources>

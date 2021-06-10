@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Resource files for Mesh class GResource bundle -->
+<gresources>
+	<gresource prefix="/org/chris_sterne/enigma-in-the-wine-cellar">
+		<file>VertexShader.glsl</file>
+		<file>FragmentShader.glsl</file>
+		<file alias="WineCellar_A.msh">meshes/WineCellar_A.msh</file>
+		<file alias="BlockWall_N.msh">meshes/BlockWall_N.msh</file>
+		<file alias="BlockWall_A.msh">meshes/BlockWall_A.msh</file>
+		<file alias="StoneWall_A.msh">meshes/StoneWall_A.msh</file>
+		<file alias="Ladder_A.msh">meshes/Ladder_A.msh</file>
+		<file alias="LadderEnd_A.msh">meshes/LadderEnd_A.msh</file>
+		<file alias="Mushrooms_A.msh">meshes/Mushrooms_A.msh</file>	
+		<file alias="CorkScrew_A.msh">meshes/CorkScrew_A.msh</file>
+		<file alias="WineBottle_A.msh">meshes/WineBottle_A.msh</file>
+		<file alias="Bread_A.msh">meshes/Bread_A.msh</file>
+		<file alias="Cheese_A.msh">meshes/Cheese_A.msh</file>
+		<file alias="Knife_A.msh">meshes/Knife_A.msh</file>
+		<file alias="Apple_A.msh">meshes/Apple_A.msh</file>
+		<file alias="WineGlass_A.msh">meshes/WineGlass_A.msh</file>		
+		<file alias="PlaceMat_A.msh">meshes/PlaceMat_A.msh</file>
+		<file alias="Grapes_A.msh">meshes/Grapes_A.msh</file>
+		<file alias="Skull_A.msh">meshes/Skull_A.msh</file>
+		<file alias="EdgeDrain_A.msh">meshes/EdgeDrain_A.msh</file>
+		<file alias="AirVent_A.msh">meshes/AirVent_A.msh</file>
+	</gresource>
+</gresources>

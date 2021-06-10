@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Resource files for AboutView class GResource bundle -->
+<gresources>
+  <gresource prefix="/org/chris_sterne/enigma-in-the-wine-cellar">
+    <file preprocess="xml-stripblanks">AboutView.ui</file>
+    <file>AboutView.txt</file>
+    <file>AboutView.png</file>
+  </gresource>
+</gresources>

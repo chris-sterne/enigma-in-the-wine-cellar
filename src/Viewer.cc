@@ -608,11 +608,6 @@ bool Enigma::Viewer::render(const Glib::RefPtr<Gdk::GLContext>& context)
 
 void Enigma::Viewer::render_viewcone()
 {
-	// Clear object buffers.
-	
-	m_objects.clear();
-	m_items.clear();
-
 	// Apply coarse rotation to viewcone.  This establishes the relative
 	// rotation origin for additional fine rotations.
 	
@@ -797,6 +792,11 @@ void Enigma::Viewer::render_viewcone()
 	               + near_c * NEAR_CLIP
 	               + m_point.m_fine_north * FULL_ROOM;
 	
+	// Clear object buffers.
+	
+	m_objects.clear();
+	m_items.clear();
+
 	// Iterate over all world positions contained within the boundary of
 	// the viewcone, culling all positions that are not visible (do not
 	// cross into the positive inner space of the viewcone frustrum),

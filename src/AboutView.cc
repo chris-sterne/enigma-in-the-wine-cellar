@@ -21,6 +21,7 @@
 #include <gtkmm/textview.h>
 #include <gtkmm/button.h>
 #include "AboutView.h"
+#include "config.h"
 
 //--------------------
 // Local declarations.
@@ -77,7 +78,7 @@ Enigma::AboutView::AboutView()
 		Glib::ustring::compose(
 _("\n<b>Enigma in the Wine Cellar</b>\n\n\
 %1\n\n\
-© 2005, 2021 Chris Sterne"),E_PACKAGE_VERSION);
+© 2005, 2021 Chris Sterne"),PACKAGE_VERSION);
 
 	Gtk::Label* label = nullptr;
 	m_builder->get_widget("title_text", label);

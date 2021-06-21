@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Resource files for Sound class GResource bundle -->
-<gresources>
-	<gresource prefix="/org/chris_sterne/enigma-in-the-wine-cellar">
-		<file alias="Bump.ogg">sounds/Bump.ogg</file>
-		<file alias="ItemFound.ogg">sounds/ItemFound.ogg</file>
-		<file alias="SkullFound.ogg">sounds/SkullFound.ogg</file>
-	</gresource>
-</gresources>

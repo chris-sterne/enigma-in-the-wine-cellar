@@ -99,28 +99,20 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_enigma_in_the_wine_cellar_OBJECTS = main.$(OBJEXT) \
-	Application.$(OBJEXT) Application.gresource.$(OBJEXT) \
-	PlayerView.$(OBJEXT) PlayerView.gresource.$(OBJEXT) \
-	ItemsView.$(OBJEXT) ItemsView.gresource.$(OBJEXT) \
-	WorldsView.$(OBJEXT) WorldsView.gresource.$(OBJEXT) \
-	HelpView.$(OBJEXT) HelpView.gresource.$(OBJEXT) \
-	AboutView.$(OBJEXT) AboutView.gresource.$(OBJEXT) \
-	Object.$(OBJEXT) Object.gresource.$(OBJEXT) Mesh.$(OBJEXT) \
-	Mesh.gresource.$(OBJEXT) Sound.$(OBJEXT) \
-	Sound.gresource.$(OBJEXT) World.$(OBJEXT) Boundary.$(OBJEXT) \
-	Location.$(OBJEXT) FineLocation.$(OBJEXT) UserAction.$(OBJEXT) \
-	Viewer.$(OBJEXT) Player.$(OBJEXT) Matrix4.$(OBJEXT) \
-	ObjectList.$(OBJEXT) ItemList.$(OBJEXT) \
-	ItemList.gresource.$(OBJEXT) Item.$(OBJEXT) \
-	PlayerList.$(OBJEXT) WineCellar.$(OBJEXT) BlockWall.$(OBJEXT) \
-	StoneWall.$(OBJEXT) Ladder.$(OBJEXT) LadderEnd.$(OBJEXT) \
-	Blocker.$(OBJEXT) Mover.$(OBJEXT) Turner.$(OBJEXT) \
-	Mushrooms.$(OBJEXT) CorkScrew.$(OBJEXT) WineBottle.$(OBJEXT) \
-	Bread.$(OBJEXT) Cheese.$(OBJEXT) Knife.$(OBJEXT) \
-	Apple.$(OBJEXT) WineGlass.$(OBJEXT) PlaceMat.$(OBJEXT) \
-	Grapes.$(OBJEXT) Skull.$(OBJEXT) EdgeDrain.$(OBJEXT) \
-	AirVent.$(OBJEXT)
+am_enigma_in_the_wine_cellar_OBJECTS = main.$(OBJEXT) GLArea.$(OBJEXT) \
+	Application.$(OBJEXT) Window.$(OBJEXT) Settings.$(OBJEXT) \
+	CellarView.$(OBJEXT) PlayerView.$(OBJEXT) MapsView.$(OBJEXT) \
+	SettingsView.$(OBJEXT) AboutView.$(OBJEXT) \
+	InventoryView.$(OBJEXT) HelpView.$(OBJEXT) MeshList.$(OBJEXT) \
+	ViewCone.$(OBJEXT) Map.$(OBJEXT) MapObjectList.$(OBJEXT) \
+	MapTeleporterList.$(OBJEXT) MapItemList.$(OBJEXT) \
+	MapPlayerList.$(OBJEXT) ItemDialog.$(OBJEXT) \
+	GameDialog.$(OBJEXT) ErrorDialog.$(OBJEXT) PlayRoom.$(OBJEXT) \
+	Transition.$(OBJEXT) FinePoint.$(OBJEXT) Sounds.$(OBJEXT) \
+	Resources.$(OBJEXT) MapLocation.$(OBJEXT) \
+	ScreenInput.$(OBJEXT) MapController.$(OBJEXT) \
+	MapControllerList.$(OBJEXT) Connection.$(OBJEXT) \
+	EnigmaWC.gresource.$(OBJEXT)
 enigma_in_the_wine_cellar_OBJECTS =  \
 	$(am_enigma_in_the_wine_cellar_OBJECTS)
 am__DEPENDENCIES_1 =
@@ -143,32 +135,22 @@ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/AboutView.Po \
-	./$(DEPDIR)/AboutView.gresource.Po ./$(DEPDIR)/AirVent.Po \
-	./$(DEPDIR)/Apple.Po ./$(DEPDIR)/Application.Po \
-	./$(DEPDIR)/Application.gresource.Po ./$(DEPDIR)/BlockWall.Po \
-	./$(DEPDIR)/Blocker.Po ./$(DEPDIR)/Boundary.Po \
-	./$(DEPDIR)/Bread.Po ./$(DEPDIR)/Cheese.Po \
-	./$(DEPDIR)/CorkScrew.Po ./$(DEPDIR)/EdgeDrain.Po \
-	./$(DEPDIR)/FineLocation.Po ./$(DEPDIR)/Grapes.Po \
-	./$(DEPDIR)/HelpView.Po ./$(DEPDIR)/HelpView.gresource.Po \
-	./$(DEPDIR)/Item.Po ./$(DEPDIR)/ItemList.Po \
-	./$(DEPDIR)/ItemList.gresource.Po ./$(DEPDIR)/ItemsView.Po \
-	./$(DEPDIR)/ItemsView.gresource.Po ./$(DEPDIR)/Knife.Po \
-	./$(DEPDIR)/Ladder.Po ./$(DEPDIR)/LadderEnd.Po \
-	./$(DEPDIR)/Location.Po ./$(DEPDIR)/Matrix4.Po \
-	./$(DEPDIR)/Mesh.Po ./$(DEPDIR)/Mesh.gresource.Po \
-	./$(DEPDIR)/Mover.Po ./$(DEPDIR)/Mushrooms.Po \
-	./$(DEPDIR)/Object.Po ./$(DEPDIR)/Object.gresource.Po \
-	./$(DEPDIR)/ObjectList.Po ./$(DEPDIR)/PlaceMat.Po \
-	./$(DEPDIR)/Player.Po ./$(DEPDIR)/PlayerList.Po \
-	./$(DEPDIR)/PlayerView.Po ./$(DEPDIR)/PlayerView.gresource.Po \
-	./$(DEPDIR)/Skull.Po ./$(DEPDIR)/Sound.Po \
-	./$(DEPDIR)/Sound.gresource.Po ./$(DEPDIR)/StoneWall.Po \
-	./$(DEPDIR)/Turner.Po ./$(DEPDIR)/UserAction.Po \
-	./$(DEPDIR)/Viewer.Po ./$(DEPDIR)/WineBottle.Po \
-	./$(DEPDIR)/WineCellar.Po ./$(DEPDIR)/WineGlass.Po \
-	./$(DEPDIR)/World.Po ./$(DEPDIR)/WorldsView.Po \
-	./$(DEPDIR)/WorldsView.gresource.Po ./$(DEPDIR)/main.Po
+	./$(DEPDIR)/Application.Po ./$(DEPDIR)/CellarView.Po \
+	./$(DEPDIR)/Connection.Po ./$(DEPDIR)/EnigmaWC.gresource.Po \
+	./$(DEPDIR)/ErrorDialog.Po ./$(DEPDIR)/FinePoint.Po \
+	./$(DEPDIR)/GLArea.Po ./$(DEPDIR)/GameDialog.Po \
+	./$(DEPDIR)/HelpView.Po ./$(DEPDIR)/InventoryView.Po \
+	./$(DEPDIR)/ItemDialog.Po ./$(DEPDIR)/Map.Po \
+	./$(DEPDIR)/MapController.Po ./$(DEPDIR)/MapControllerList.Po \
+	./$(DEPDIR)/MapItemList.Po ./$(DEPDIR)/MapLocation.Po \
+	./$(DEPDIR)/MapObjectList.Po ./$(DEPDIR)/MapPlayerList.Po \
+	./$(DEPDIR)/MapTeleporterList.Po ./$(DEPDIR)/MapsView.Po \
+	./$(DEPDIR)/MeshList.Po ./$(DEPDIR)/PlayRoom.Po \
+	./$(DEPDIR)/PlayerView.Po ./$(DEPDIR)/Resources.Po \
+	./$(DEPDIR)/ScreenInput.Po ./$(DEPDIR)/Settings.Po \
+	./$(DEPDIR)/SettingsView.Po ./$(DEPDIR)/Sounds.Po \
+	./$(DEPDIR)/Transition.Po ./$(DEPDIR)/ViewCone.Po \
+	./$(DEPDIR)/Window.Po ./$(DEPDIR)/main.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -343,7 +325,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = meshes
+SUBDIRS = 
 AM_CPPFLAGS = \
 	-DG_APPLICATION_ID='"org.chris_sterne.enigma_in_the_wine_cellar"' \
 	-DG_RESOURCE_PREFIX='"/org/chris_sterne/enigma-in-the-wine-cellar/"' \
@@ -355,66 +337,46 @@ AM_CPPFLAGS = \
 
 AM_CFLAGS = -Wall
 enigma_in_the_wine_cellar_LDFLAGS = 
-enigma_in_the_wine_cellar_LDADD = $(ENIGMA_IN_THE_WINE_CELLAR_LIBS)
+enigma_in_the_wine_cellar_LDADD = $(ENIGMA_IN_THE_WINE_CELLAR_LIBS) -ldl -lGL
 enigma_in_the_wine_cellar_SOURCES = \
-	main.cc \
-	Application.cc \
-	Application.gresource.cc \
-	PlayerView.cc \
-	PlayerView.gresource.cc \
-	ItemsView.cc \
-	ItemsView.gresource.cc \
-	WorldsView.cc \
-	WorldsView.gresource.cc \
-	HelpView.cc \
-	HelpView.gresource.cc \
-	AboutView.cc \
-	AboutView.gresource.cc \
-	Object.cc \
-	Object.gresource.cc \
-	Mesh.cc \
-	Mesh.gresource.cc \
-	Sound.cc \
-	Sound.gresource.cc \
-	World.cc \
-	Boundary.cc \
-	Location.cc \
-	FineLocation.cc \
-	UserAction.cc \
-	Viewer.cc \
-	Player.cc \
-	Matrix4.cc \
-	ObjectList.cc \
-	ItemList.cc \
-	ItemList.gresource.cc \
-	Item.cc \
-	PlayerList.cc \
-	WineCellar.cc \
-	BlockWall.cc \
-	StoneWall.cc \
-	Ladder.cc \
-	LadderEnd.cc \
-	Blocker.cc \
-	Mover.cc \
-	Turner.cc \
-	Mushrooms.cc \
-	CorkScrew.cc \
-	WineBottle.cc \
-	Bread.cc \
-	Cheese.cc \
-	Knife.cc \
-	Apple.cc \
-	WineGlass.cc \
-	PlaceMat.cc \
-	Grapes.cc \
-	Skull.cc \
-	EdgeDrain.cc \
-	AirVent.cc
+	main.cpp \
+  GLArea.cpp \
+	Application.cpp \
+	Window.cpp \
+  Settings.cpp \
+  CellarView.cpp \
+	PlayerView.cpp \
+  MapsView.cpp \
+  SettingsView.cpp \
+  AboutView.cpp \
+  InventoryView.cpp \
+  HelpView.cpp \
+	MeshList.cpp \
+	ViewCone.cpp \
+	Map.cpp \
+	MapObjectList.cpp \
+  MapTeleporterList.cpp \
+	MapItemList.cpp \
+	MapPlayerList.cpp \
+  ItemDialog.cpp \
+  GameDialog.cpp \
+  ErrorDialog.cpp \
+	PlayRoom.cpp \
+  Transition.cpp \
+  FinePoint.cpp \
+  Sounds.cpp \
+	Resources.cpp \
+  MapLocation.cpp \
+  ScreenInput.cpp \
+  MapController.cpp \
+  MapControllerList.cpp \
+  Connection.cpp \
+	EnigmaWC.gresource.cpp
 
 all: all-recursive
 
 .SUFFIXES:
-.SUFFIXES: .cc .o .obj
+.SUFFIXES: .cpp .o .obj
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -498,57 +460,37 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AboutView.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AboutView.gresource.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AirVent.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Apple.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Application.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Application.gresource.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BlockWall.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Blocker.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Boundary.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Bread.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Cheese.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CorkScrew.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EdgeDrain.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FineLocation.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Grapes.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CellarView.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Connection.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EnigmaWC.gresource.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ErrorDialog.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FinePoint.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLArea.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GameDialog.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HelpView.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HelpView.gresource.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Item.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ItemList.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ItemList.gresource.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ItemsView.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ItemsView.gresource.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Knife.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Ladder.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LadderEnd.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Location.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Matrix4.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Mesh.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Mesh.gresource.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Mover.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Mushrooms.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Object.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Object.gresource.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ObjectList.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PlaceMat.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Player.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PlayerList.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/InventoryView.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ItemDialog.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Map.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MapController.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MapControllerList.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MapItemList.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MapLocation.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MapObjectList.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MapPlayerList.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MapTeleporterList.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MapsView.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MeshList.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PlayRoom.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PlayerView.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PlayerView.gresource.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Skull.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Sound.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Sound.gresource.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StoneWall.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Turner.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UserAction.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Viewer.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WineBottle.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WineCellar.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WineGlass.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/World.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WorldsView.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WorldsView.gresource.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Resources.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ScreenInput.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Settings.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SettingsView.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Sounds.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Transition.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ViewCone.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Window.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
@@ -557,14 +499,14 @@ $(am__depfiles_remade):
 
 am--depfiles: $(am__depfiles_remade)
 
-.cc.o:
+.cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ $<
 
-.cc.obj:
+.cpp.obj:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
@@ -772,57 +714,37 @@ clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-recursive
 		-rm -f ./$(DEPDIR)/AboutView.Po
-	-rm -f ./$(DEPDIR)/AboutView.gresource.Po
-	-rm -f ./$(DEPDIR)/AirVent.Po
-	-rm -f ./$(DEPDIR)/Apple.Po
 	-rm -f ./$(DEPDIR)/Application.Po
-	-rm -f ./$(DEPDIR)/Application.gresource.Po
-	-rm -f ./$(DEPDIR)/BlockWall.Po
-	-rm -f ./$(DEPDIR)/Blocker.Po
-	-rm -f ./$(DEPDIR)/Boundary.Po
-	-rm -f ./$(DEPDIR)/Bread.Po
-	-rm -f ./$(DEPDIR)/Cheese.Po
-	-rm -f ./$(DEPDIR)/CorkScrew.Po
-	-rm -f ./$(DEPDIR)/EdgeDrain.Po
-	-rm -f ./$(DEPDIR)/FineLocation.Po
-	-rm -f ./$(DEPDIR)/Grapes.Po
+	-rm -f ./$(DEPDIR)/CellarView.Po
+	-rm -f ./$(DEPDIR)/Connection.Po
+	-rm -f ./$(DEPDIR)/EnigmaWC.gresource.Po
+	-rm -f ./$(DEPDIR)/ErrorDialog.Po
+	-rm -f ./$(DEPDIR)/FinePoint.Po
+	-rm -f ./$(DEPDIR)/GLArea.Po
+	-rm -f ./$(DEPDIR)/GameDialog.Po
 	-rm -f ./$(DEPDIR)/HelpView.Po
-	-rm -f ./$(DEPDIR)/HelpView.gresource.Po
-	-rm -f ./$(DEPDIR)/Item.Po
-	-rm -f ./$(DEPDIR)/ItemList.Po
-	-rm -f ./$(DEPDIR)/ItemList.gresource.Po
-	-rm -f ./$(DEPDIR)/ItemsView.Po
-	-rm -f ./$(DEPDIR)/ItemsView.gresource.Po
-	-rm -f ./$(DEPDIR)/Knife.Po
-	-rm -f ./$(DEPDIR)/Ladder.Po
-	-rm -f ./$(DEPDIR)/LadderEnd.Po
-	-rm -f ./$(DEPDIR)/Location.Po
-	-rm -f ./$(DEPDIR)/Matrix4.Po
-	-rm -f ./$(DEPDIR)/Mesh.Po
-	-rm -f ./$(DEPDIR)/Mesh.gresource.Po
-	-rm -f ./$(DEPDIR)/Mover.Po
-	-rm -f ./$(DEPDIR)/Mushrooms.Po
-	-rm -f ./$(DEPDIR)/Object.Po
-	-rm -f ./$(DEPDIR)/Object.gresource.Po
-	-rm -f ./$(DEPDIR)/ObjectList.Po
-	-rm -f ./$(DEPDIR)/PlaceMat.Po
-	-rm -f ./$(DEPDIR)/Player.Po
-	-rm -f ./$(DEPDIR)/PlayerList.Po
+	-rm -f ./$(DEPDIR)/InventoryView.Po
+	-rm -f ./$(DEPDIR)/ItemDialog.Po
+	-rm -f ./$(DEPDIR)/Map.Po
+	-rm -f ./$(DEPDIR)/MapController.Po
+	-rm -f ./$(DEPDIR)/MapControllerList.Po
+	-rm -f ./$(DEPDIR)/MapItemList.Po
+	-rm -f ./$(DEPDIR)/MapLocation.Po
+	-rm -f ./$(DEPDIR)/MapObjectList.Po
+	-rm -f ./$(DEPDIR)/MapPlayerList.Po
+	-rm -f ./$(DEPDIR)/MapTeleporterList.Po
+	-rm -f ./$(DEPDIR)/MapsView.Po
+	-rm -f ./$(DEPDIR)/MeshList.Po
+	-rm -f ./$(DEPDIR)/PlayRoom.Po
 	-rm -f ./$(DEPDIR)/PlayerView.Po
-	-rm -f ./$(DEPDIR)/PlayerView.gresource.Po
-	-rm -f ./$(DEPDIR)/Skull.Po
-	-rm -f ./$(DEPDIR)/Sound.Po
-	-rm -f ./$(DEPDIR)/Sound.gresource.Po
-	-rm -f ./$(DEPDIR)/StoneWall.Po
-	-rm -f ./$(DEPDIR)/Turner.Po
-	-rm -f ./$(DEPDIR)/UserAction.Po
-	-rm -f ./$(DEPDIR)/Viewer.Po
-	-rm -f ./$(DEPDIR)/WineBottle.Po
-	-rm -f ./$(DEPDIR)/WineCellar.Po
-	-rm -f ./$(DEPDIR)/WineGlass.Po
-	-rm -f ./$(DEPDIR)/World.Po
-	-rm -f ./$(DEPDIR)/WorldsView.Po
-	-rm -f ./$(DEPDIR)/WorldsView.gresource.Po
+	-rm -f ./$(DEPDIR)/Resources.Po
+	-rm -f ./$(DEPDIR)/ScreenInput.Po
+	-rm -f ./$(DEPDIR)/Settings.Po
+	-rm -f ./$(DEPDIR)/SettingsView.Po
+	-rm -f ./$(DEPDIR)/Sounds.Po
+	-rm -f ./$(DEPDIR)/Transition.Po
+	-rm -f ./$(DEPDIR)/ViewCone.Po
+	-rm -f ./$(DEPDIR)/Window.Po
 	-rm -f ./$(DEPDIR)/main.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
@@ -870,57 +792,37 @@ installcheck-am:
 
 maintainer-clean: maintainer-clean-recursive
 		-rm -f ./$(DEPDIR)/AboutView.Po
-	-rm -f ./$(DEPDIR)/AboutView.gresource.Po
-	-rm -f ./$(DEPDIR)/AirVent.Po
-	-rm -f ./$(DEPDIR)/Apple.Po
 	-rm -f ./$(DEPDIR)/Application.Po
-	-rm -f ./$(DEPDIR)/Application.gresource.Po
-	-rm -f ./$(DEPDIR)/BlockWall.Po
-	-rm -f ./$(DEPDIR)/Blocker.Po
-	-rm -f ./$(DEPDIR)/Boundary.Po
-	-rm -f ./$(DEPDIR)/Bread.Po
-	-rm -f ./$(DEPDIR)/Cheese.Po
-	-rm -f ./$(DEPDIR)/CorkScrew.Po
-	-rm -f ./$(DEPDIR)/EdgeDrain.Po
-	-rm -f ./$(DEPDIR)/FineLocation.Po
-	-rm -f ./$(DEPDIR)/Grapes.Po
+	-rm -f ./$(DEPDIR)/CellarView.Po
+	-rm -f ./$(DEPDIR)/Connection.Po
+	-rm -f ./$(DEPDIR)/EnigmaWC.gresource.Po
+	-rm -f ./$(DEPDIR)/ErrorDialog.Po
+	-rm -f ./$(DEPDIR)/FinePoint.Po
+	-rm -f ./$(DEPDIR)/GLArea.Po
+	-rm -f ./$(DEPDIR)/GameDialog.Po
 	-rm -f ./$(DEPDIR)/HelpView.Po
-	-rm -f ./$(DEPDIR)/HelpView.gresource.Po
-	-rm -f ./$(DEPDIR)/Item.Po
-	-rm -f ./$(DEPDIR)/ItemList.Po
-	-rm -f ./$(DEPDIR)/ItemList.gresource.Po
-	-rm -f ./$(DEPDIR)/ItemsView.Po
-	-rm -f ./$(DEPDIR)/ItemsView.gresource.Po
-	-rm -f ./$(DEPDIR)/Knife.Po
-	-rm -f ./$(DEPDIR)/Ladder.Po
-	-rm -f ./$(DEPDIR)/LadderEnd.Po
-	-rm -f ./$(DEPDIR)/Location.Po
-	-rm -f ./$(DEPDIR)/Matrix4.Po
-	-rm -f ./$(DEPDIR)/Mesh.Po
-	-rm -f ./$(DEPDIR)/Mesh.gresource.Po
-	-rm -f ./$(DEPDIR)/Mover.Po
-	-rm -f ./$(DEPDIR)/Mushrooms.Po
-	-rm -f ./$(DEPDIR)/Object.Po
-	-rm -f ./$(DEPDIR)/Object.gresource.Po
-	-rm -f ./$(DEPDIR)/ObjectList.Po
-	-rm -f ./$(DEPDIR)/PlaceMat.Po
-	-rm -f ./$(DEPDIR)/Player.Po
-	-rm -f ./$(DEPDIR)/PlayerList.Po
+	-rm -f ./$(DEPDIR)/InventoryView.Po
+	-rm -f ./$(DEPDIR)/ItemDialog.Po
+	-rm -f ./$(DEPDIR)/Map.Po
+	-rm -f ./$(DEPDIR)/MapController.Po
+	-rm -f ./$(DEPDIR)/MapControllerList.Po
+	-rm -f ./$(DEPDIR)/MapItemList.Po
+	-rm -f ./$(DEPDIR)/MapLocation.Po
+	-rm -f ./$(DEPDIR)/MapObjectList.Po
+	-rm -f ./$(DEPDIR)/MapPlayerList.Po
+	-rm -f ./$(DEPDIR)/MapTeleporterList.Po
+	-rm -f ./$(DEPDIR)/MapsView.Po
+	-rm -f ./$(DEPDIR)/MeshList.Po
+	-rm -f ./$(DEPDIR)/PlayRoom.Po
 	-rm -f ./$(DEPDIR)/PlayerView.Po
-	-rm -f ./$(DEPDIR)/PlayerView.gresource.Po
-	-rm -f ./$(DEPDIR)/Skull.Po
-	-rm -f ./$(DEPDIR)/Sound.Po
-	-rm -f ./$(DEPDIR)/Sound.gresource.Po
-	-rm -f ./$(DEPDIR)/StoneWall.Po
-	-rm -f ./$(DEPDIR)/Turner.Po
-	-rm -f ./$(DEPDIR)/UserAction.Po
-	-rm -f ./$(DEPDIR)/Viewer.Po
-	-rm -f ./$(DEPDIR)/WineBottle.Po
-	-rm -f ./$(DEPDIR)/WineCellar.Po
-	-rm -f ./$(DEPDIR)/WineGlass.Po
-	-rm -f ./$(DEPDIR)/World.Po
-	-rm -f ./$(DEPDIR)/WorldsView.Po
-	-rm -f ./$(DEPDIR)/WorldsView.gresource.Po
+	-rm -f ./$(DEPDIR)/Resources.Po
+	-rm -f ./$(DEPDIR)/ScreenInput.Po
+	-rm -f ./$(DEPDIR)/Settings.Po
+	-rm -f ./$(DEPDIR)/SettingsView.Po
+	-rm -f ./$(DEPDIR)/Sounds.Po
+	-rm -f ./$(DEPDIR)/Transition.Po
+	-rm -f ./$(DEPDIR)/ViewCone.Po
+	-rm -f ./$(DEPDIR)/Window.Po
 	-rm -f ./$(DEPDIR)/main.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
@@ -959,101 +861,10 @@ uninstall-am: uninstall-binPROGRAMS
 .PRECIOUS: Makefile
 
 
-Application.gresource.cc: \
-	Application.gresource.xml \
-	Application.ui \
-	Alert.png
-	-glib-compile-resources Application.gresource.xml \
-		--target=Application.gresource.cc --generate-source
-
-PlayerView.gresource.cc: \
-	PlayerView.gresource.xml \
-	PlayerView.ui
-	-glib-compile-resources PlayerView.gresource.xml \
-		--target=PlayerView.gresource.cc --generate-source
-
-ItemsView.gresource.cc: \
-	ItemsView.gresource.xml \
-	ItemsView.ui
-	-glib-compile-resources ItemsView.gresource.xml \
-		--target=ItemsView.gresource.cc --generate-source
-
-WorldsView.gresource.cc: \
-	WorldsView.gresource.xml \
-	WorldsView.ui
-	-glib-compile-resources WorldsView.gresource.xml \
-		--target=WorldsView.gresource.cc --generate-source
-
-HelpView.gresource.cc: \
-	HelpView.gresource.xml \
-	HelpView.ui HelpView.txt
-	-glib-compile-resources HelpView.gresource.xml \
-		--target=HelpView.gresource.cc --generate-source
-
-AboutView.gresource.cc: \
-	AboutView.gresource.xml \
-	AboutView.ui \
-	AboutView.txt \
-	AboutView.png
-	-glib-compile-resources AboutView.gresource.xml \
-		--target=AboutView.gresource.cc --generate-source
-
-ItemList.gresource.cc: \
-	ItemList.gresource.xml \
-	ItemList.ui
-	-glib-compile-resources ItemList.gresource.xml \
-		--target=ItemList.gresource.cc --generate-source
-
-Object.gresource.cc: \
-	Object.gresource.xml \
-	images/Apple.png \
-	images/Bread.png \
-	images/Cheese.png \
-	images/CorkScrew.png \
-	images/Grapes.png \
-	images/Knife.png \
-	images/Mushrooms.png \
-	images/None.png \
-	images/PlaceMat.png \
-	images/Skull.png \
-	images/WineBottle.png \
-	images/WineGlass.png
-	-glib-compile-resources Object.gresource.xml \
-		--target=Object.gresource.cc --generate-source
-
-Mesh.gresource.cc: \
-	Mesh.gresource.xml \
-	VertexShader.glsl \
-	FragmentShader.glsl \
-	meshes/WineCellar_A.msh \
-	meshes/BlockWall_N.msh \
-	meshes/BlockWall_A.msh \
-	meshes/StoneWall_A.msh \
-	meshes/Ladder_A.msh \
-	meshes/LadderEnd_A.msh \
-	meshes/Mushrooms_A.msh \
-	meshes/CorkScrew_A.msh \
-	meshes/WineBottle_A.msh \
-	meshes/Bread_A.msh \
-	meshes/Cheese_A.msh \
-	meshes/Knife_A.msh \
-	meshes/Apple_A.msh \
-	meshes/WineGlass_A.msh \
-	meshes/PlaceMat_A.msh \
-	meshes/Grapes_A.msh \
-	meshes/Skull_A.msh \
-	meshes/EdgeDrain_A.msh \
-	meshes/AirVent_A.msh
-	-glib-compile-resources Mesh.gresource.xml \
-		--target=Mesh.gresource.cc --generate-source
-
-Sound.gresource.cc: \
-	Sound.gresource.xml \
-	sounds/Bump.ogg \
-	sounds/ItemFound.ogg \
-	sounds/SkullFound.ogg
-	-glib-compile-resources Sound.gresource.xml \
-		--target=Sound.gresource.cc --generate-source
+EnigmaWC.gresource.cpp: \
+	EnigmaWC.gresource.xml
+	-glib-compile-resources EnigmaWC.gresource.xml \
+		--target=EnigmaWC.gresource.cc --generate-source
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

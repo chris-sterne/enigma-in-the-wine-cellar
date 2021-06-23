@@ -112,7 +112,7 @@ am_enigma_in_the_wine_cellar_OBJECTS = main.$(OBJEXT) GLArea.$(OBJEXT) \
 	Resources.$(OBJEXT) MapLocation.$(OBJEXT) \
 	ScreenInput.$(OBJEXT) MapController.$(OBJEXT) \
 	MapControllerList.$(OBJEXT) Connection.$(OBJEXT) \
-	EnigmaWC.gresource.$(OBJEXT)
+	Matrix4.$(OBJEXT) EnigmaWC.gresource.$(OBJEXT)
 enigma_in_the_wine_cellar_OBJECTS =  \
 	$(am_enigma_in_the_wine_cellar_OBJECTS)
 am__DEPENDENCIES_1 =
@@ -145,12 +145,13 @@ am__depfiles_remade = ./$(DEPDIR)/AboutView.Po \
 	./$(DEPDIR)/MapItemList.Po ./$(DEPDIR)/MapLocation.Po \
 	./$(DEPDIR)/MapObjectList.Po ./$(DEPDIR)/MapPlayerList.Po \
 	./$(DEPDIR)/MapTeleporterList.Po ./$(DEPDIR)/MapsView.Po \
-	./$(DEPDIR)/MeshList.Po ./$(DEPDIR)/PlayRoom.Po \
-	./$(DEPDIR)/PlayerView.Po ./$(DEPDIR)/Resources.Po \
-	./$(DEPDIR)/ScreenInput.Po ./$(DEPDIR)/Settings.Po \
-	./$(DEPDIR)/SettingsView.Po ./$(DEPDIR)/Sounds.Po \
-	./$(DEPDIR)/Transition.Po ./$(DEPDIR)/ViewCone.Po \
-	./$(DEPDIR)/Window.Po ./$(DEPDIR)/main.Po
+	./$(DEPDIR)/Matrix4.Po ./$(DEPDIR)/MeshList.Po \
+	./$(DEPDIR)/PlayRoom.Po ./$(DEPDIR)/PlayerView.Po \
+	./$(DEPDIR)/Resources.Po ./$(DEPDIR)/ScreenInput.Po \
+	./$(DEPDIR)/Settings.Po ./$(DEPDIR)/SettingsView.Po \
+	./$(DEPDIR)/Sounds.Po ./$(DEPDIR)/Transition.Po \
+	./$(DEPDIR)/ViewCone.Po ./$(DEPDIR)/Window.Po \
+	./$(DEPDIR)/main.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -371,6 +372,7 @@ enigma_in_the_wine_cellar_SOURCES = \
   MapController.cpp \
   MapControllerList.cpp \
   Connection.cpp \
+  Matrix4.cpp \
 	EnigmaWC.gresource.cpp
 
 all: all-recursive
@@ -480,6 +482,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MapPlayerList.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MapTeleporterList.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MapsView.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Matrix4.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MeshList.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PlayRoom.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PlayerView.Po@am__quote@ # am--include-marker
@@ -734,6 +737,7 @@ distclean: distclean-recursive
 	-rm -f ./$(DEPDIR)/MapPlayerList.Po
 	-rm -f ./$(DEPDIR)/MapTeleporterList.Po
 	-rm -f ./$(DEPDIR)/MapsView.Po
+	-rm -f ./$(DEPDIR)/Matrix4.Po
 	-rm -f ./$(DEPDIR)/MeshList.Po
 	-rm -f ./$(DEPDIR)/PlayRoom.Po
 	-rm -f ./$(DEPDIR)/PlayerView.Po
@@ -812,6 +816,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ./$(DEPDIR)/MapPlayerList.Po
 	-rm -f ./$(DEPDIR)/MapTeleporterList.Po
 	-rm -f ./$(DEPDIR)/MapsView.Po
+	-rm -f ./$(DEPDIR)/Matrix4.Po
 	-rm -f ./$(DEPDIR)/MeshList.Po
 	-rm -f ./$(DEPDIR)/PlayRoom.Po
 	-rm -f ./$(DEPDIR)/PlayerView.Po
@@ -864,7 +869,7 @@ uninstall-am: uninstall-binPROGRAMS
 EnigmaWC.gresource.cpp: \
 	EnigmaWC.gresource.xml
 	-glib-compile-resources EnigmaWC.gresource.xml \
-		--target=EnigmaWC.gresource.cc --generate-source
+		--target=EnigmaWC.gresource.cpp --generate-source
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

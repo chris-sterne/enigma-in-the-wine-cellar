@@ -132,17 +132,145 @@ void ReadLine( std::string& aString, guchar** aArray, gsize* aLength )
 	return;
 }
 
-//*-----------------------------------------------------------------------*
-//* This private function reads image mesh state data from the resources. *
-//*-----------------------------------------------------------------------*
+//----------------------------------------------------------------------
+// This private function reads image mesh state data from the resources.
+//----------------------------------------------------------------------
+// aPath: Full path to mesh resource.
+//----------------------------------------------------------------------
 
 void ReadStateData( CMesh::CState& aState, const std::string& aPath )
 {
+printf("Resources ReadStateData %s\n", aPath.c_str());
+  
+  // Extract the mesh data from the resource bundle.  Multi-byte values
+	// in this bundle are in little-endian format.
+	
+	Glib::RefPtr<const Glib::Bytes> byte_array;
+	
+	try
+  {	
+		byte_array =
+			Gio::Resource::lookup_data_global(aPath,
+			                                  Gio::RESOURCE_LOOKUP_FLAGS_NONE);
+	}
+	catch( Glib::Error error )
+	{
+		return;
+	}
+
+	gsize size;
+	guint8* byte = (guint8*)byte_array->get_data(size);
+	
+	// Return immediately if there is too little remaining data,
+	// or the header ID ("mesh\n") is wrong.
+
+	if (size < 4)
+		return;
+	
+	if  ((*(byte + 0) != 'm')
+		|| (*(byte + 1) != 's')
+		|| (*(byte + 2) != 'h')
+		|| (*(byte + 3) != '\n'))
+	{	
+		return;
+	}
+	
+	// Skip over header ID to the vertex total (4 bytes).
+	// Return immediately if there is too little remaining data.
+	
+	byte += 4;
+	size -= 4;
+	
+	if (size < 4)
+		return;
+	
+	int vertex_total = (*(byte + 0) 
+	                 + (*(byte + 1) << 8)
+	                 + (*(byte + 2) << 16)
+	                 + (*(byte + 3) << 24));
+	
+	// Skip over the vertex total to the vertex data (array of 4-byte values).
+	// Return immediately if there is too little remaining data.  Each vertex
+	// coordinate uses 12 bytes (x,y,z 3-tuples), and each vertex colour uses
+	// 16 bytes (r,g,b,a 4-tuples).
+
+	byte += 4;
+	size -= 4;
+		
+	if (size < vertex_total * (12 + 16))
+		return;
+	
+	// Declare a structure to convert from GLuint and GLfloat types.
+	
+	union
+	{
+		GLuint gl_integer;
+		GLfloat gl_float;
+	} convert;
+
+	// Stream resource data into the vertex position buffer.
+	
+	//std::vector<GLfloat> position;
+	//position.reserve(vertex_total * 3);
+	aState.iVertices.reserve(vertex_total * 3);
+		
+	int total = vertex_total * 3;
+	
+	while (total > 0)
+	{
+		// Extract a vertex position stored as a 4-byte OpenGL integer
+		// value, and convert it into an OpenGL floating-point value.
+		
+		convert.gl_integer = (*(byte + 0) 
+                       + (*(byte + 1) << 8)
+                       + (*(byte + 2) << 16)
+                       + (*(byte + 3) << 24));
+		
+		aState.iVertices.push_back(convert.gl_float);
+		//position.emplace_back(convert.gl_float);
+		
+		total -= 1;
+		byte  += 4;
+	}
+	
+	// Stream resource data into the vertex colour buffers.
+	
+	//std::vector<GLfloat> colour;
+	aState.iColours.reserve(vertex_total * 4);
+	//colour.reserve(vertex_total * 4);
+	
+	total = vertex_total * 4;
+	
+	while (total > 0)
+	{
+		// Extract a vertex colour stored as a 4-byte OpenGL integer
+		// value, and convert it to an OpenGL floating-point value.
+		
+		convert.gl_integer = (*(byte + 0) 
+                       + (*(byte + 1) << 8)
+                       + (*(byte + 2) << 16)
+                       + (*(byte + 3) << 24));
+                      
+		aState.iColours.push_back(convert.gl_float);
+		//colour.emplace_back(convert.gl_float);
+		
+		total -= 1;
+		byte  += 4;
+	}
+  
+  
+  
+  
+  
+  
+  
+  
+  
   // Find the data in the resources.  Due to the Giomm Gio::Resource
   // declaration being unrecognized, the C version of the lookup
   // function is used instead.
 	
-  GResource* Resource	= EnigmaWC_get_resource();
+  /*GResource* Resource	= EnigmaWC_get_resource();
   GError* Error				= NULL;
 	
   GBytes* Data = g_resource_lookup_data( Resource,
@@ -316,7 +444,7 @@ void ReadStateData( CMesh::CState& aState, const std::string& aPath )
 	}
 	
 	g_bytes_unref( Data );
-  return;
+  return;*/
 }
 
 //*------------------------------------------------------------*
@@ -334,13 +462,13 @@ void CResources::LoadImageMesh( CMesh& aMesh, const std::string& aName )
   // Read inactive mesh data.
   
   std::string FullName = PathName;
-  FullName.append( "_N.ply");
+  FullName.append( "_N.msh");
   ReadStateData( aMesh.iInactive, FullName );
  
   // Read active mesh data.
  
   FullName = PathName;
-  FullName.append( "_A.ply");
+  FullName.append( "_A.msh");
   ReadStateData( aMesh.iActive, FullName );
   
   return;

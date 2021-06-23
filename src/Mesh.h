@@ -11,27 +11,40 @@
 #ifndef __MESH_H__
 #define __MESH_H__
 
-#include <gtkmm.h>
 #include <GL/gl.h>
-#include <GL/glx.h>
 
 class CMesh
 {
-  public:
-    // Public classes.
-    
-    class CState
-    {
-      public:
-        std::vector<GLfloat> iVertices;  // Vertices (x,y,z triples).
-        std::vector<GLfloat> iColours;   // Vertex colours (r,g,b triples).
-        std::vector<GLuint> iFaces;      // Face vertex array indices (triples).        
-    };
-    
-    // Public data.
-    
-    CState iInactive;    // Inactive state mesh data.
-    CState iActive;      // Active state mesh data.
+	public:
+		CMesh()
+		{
+			iInitialized = false;
+		}
+	
+	// Public classes.
+
+	class CState
+	{
+		public:
+			CState()
+			{
+				// Set Buffer Object "names" to uninitialized value.
+				
+				iPositionBO = 0;
+				iColourBO   = 0;
+			}
+		
+			std::vector<GLfloat> iVertices;   // Vertices (x,y,z triples).
+			std::vector<GLfloat> iColours;    // Vertex colours (r,g,b triples).
+			GLuint iPositionBO;               // Position buffer object.
+			GLuint iColourBO;                 // Colour buffer object.    
+	};
+
+	// Public data.
+
+	CState iInactive;            // Inactive state mesh data.
+	CState iActive;              // Active state mesh data.
+	bool iInitialized;           // TRUE if initialized.
 };
 
 #endif // __MESH_H__

@@ -55,6 +55,7 @@ class CPlayerView : public Gtk::GLArea //public CGLArea
     virtual void get_preferred_width_vfunc(int& minimum_width, int& natural_width) const;
     virtual void get_preferred_height_vfunc(int& minimum_height, int& natural_height) const;
     bool on_button_press_event( GdkEventButton* button_event );
+    void on_realize() override;
     //gboolean on_render();
     bool on_render(const Glib::RefPtr<Gdk::GLContext>& context) override;
 	

@@ -12,6 +12,7 @@
 #define __MESHLIST_H__
 
 #include "MapPlayer.h"
+#include <GL/gl.h>
 #include "Mesh.h"
 
 class CMeshList : public std::vector<CMesh>
@@ -24,7 +25,8 @@ class CMeshList : public std::vector<CMesh>
     void Render( const CMapObject& aObject,
                  const CMapPlayer& aViewer );
                  
-    void Animate();
+    void Animate();   
+    void Initialize();
                  
   private:
     // Private data.
@@ -32,6 +34,13 @@ class CMeshList : public std::vector<CMesh>
     int iFishSwim;                // Fish swimming around viewer.
     int iFishTurn;                // Fish turning in place.
     int iFishState;               // Fish movement state.
+    
+		// Vertex shader attribute and uniform locations.  These will be initialized
+		// after the shader program has been compiled and linked.
+
+		GLint ivPosition;
+		GLint ivColour;
+		GLint imTransform;
 };
 
 #endif // __MESHLIST_H__

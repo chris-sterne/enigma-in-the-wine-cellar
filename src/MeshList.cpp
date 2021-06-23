@@ -8,8 +8,13 @@
 //* This class renders image meshes with OpenGL. *
 //*----------------------------------------------*
 
-#include "MeshList.h"
+#include <iostream>
+#define GL_GLEXT_PROTOTYPES
+#include <GL/gl.h>
+#include <GL/glext.h>
+#include "Matrix4.h"
 #include "Resources.h"
+#include "MeshList.h"
 
 //*---------------------*
 //* Local declarations. *
@@ -312,6 +317,20 @@ static const char* KMeshNames[ (int)EnigmaWC::ID::TOTAL ] =
   NULL                // EWater
 };
 
+static const std::string vertex_shader_code   = "VertexShader.glsl";
+static const std::string fragment_shader_code = "FragmentShader.glsl";
+
+// Perspective projection values.
+
+static const GLfloat NEAR_CLIP     = 1.0f;
+static const GLfloat FAR_CLIP      = 10.0f;
+static const GLfloat FIELD_OF_VIEW = 60.0f;
+static const GLfloat ASPECT_RATIO  = 1.0f;
+
+static const GLfloat CAMERA_OFFSET = -1.15f;  // Camera offset.
+static const GLfloat FULL_ROOM     = 2.0f;    // Width of a world room.
+static const GLfloat HALF_ROOM     = 1.0f;    // Room center to outer walls
+
 //*----------------------*
 //* Default constructor. *
 //*----------------------*
@@ -329,6 +348,11 @@ CMeshList::CMeshList()
   iFishSwim  = 0;
   iFishTurn  = 0;
   iFishState = KFishSwimLeft;
+  
+	ivPosition  = 0;
+	ivColour    = 0;
+	imTransform = 0;
+  
   return;
 }
 
@@ -362,28 +386,83 @@ void CMeshList::Render( const CMapObject& aObject,
   
   if ( KMeshNames[ Index ] == NULL )
     return;
-  
-  // If necessary, load the mesh data from the resources.
 
-  if  (( at( Index ).iInactive.iVertices.size() == 0 )
-    && ( at( Index ).iActive.iVertices.size() == 0 ))
-  {    
-    CResources Resources;
+	// Initialize object meshes if necessary.
+
+	if ( !at( Index ).iInitialized )
+	{
+		// Load inactive and active object mesh data from resources.
+		
+		CResources Resources;
     Resources.LoadImageMesh( at( Index ), KMeshNames[ Index ] );
-  }
-  
-  // Exit immediately if the object mesh is still empty (possibly due to
-  // an error in the resource data).
+		
+		if ( at( Index ).iInactive.iVertices.size() != 0 )
+		{
+			// Create server-side buffer object to contain vertex positions,
+			// and copy the client-side data to this buffer. 
 
-  if  (( at( Index ).iInactive.iVertices.size() == 0 )
-    && ( at( Index ).iActive.iVertices.size() == 0 ))
-  {
-    return;
-  }
+			glGenBuffers(1, &at( Index ).iInactive.iPositionBO);
+			glBindBuffer(GL_ARRAY_BUFFER, at( Index ).iInactive.iPositionBO);
+		
+			glBufferData(GL_ARRAY_BUFFER,
+				           at( Index ).iInactive.iVertices.size() * sizeof(GL_FLOAT),
+				           at( Index ).iInactive.iVertices.data(),
+				           GL_STATIC_DRAW);
+		
+			at( Index ).iInactive.iVertices.clear();
+		}
+		
+		if ( at( Index ).iInactive.iColours.size() != 0 )
+		{
+			glGenBuffers(1, &at( Index ).iInactive.iColourBO);
+			glBindBuffer(GL_ARRAY_BUFFER, at( Index ).iInactive.iColourBO);
+	
+			glBufferData(GL_ARRAY_BUFFER,
+	    		         at( Index ).iInactive.iColours.size() * sizeof(GL_FLOAT),
+	    		         at( Index ).iInactive.iColours.data(),
+	    		         GL_STATIC_DRAW);
+		
+			at( Index ).iInactive.iColours.clear();
+		}
+		
+		if ( at( Index ).iActive.iVertices.size() != 0 )
+		{
+			// Create server-side buffer object to contain vertex positions,
+			// and copy the client-side data to this buffer. 
 
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  glEnable(GL_CULL_FACE);
+			glGenBuffers(1, &at( Index ).iActive.iPositionBO);
+			glBindBuffer(GL_ARRAY_BUFFER, at( Index ).iActive.iPositionBO);
+		
+			glBufferData(GL_ARRAY_BUFFER,
+				           at( Index ).iActive.iVertices.size() * sizeof(GL_FLOAT),
+				           at( Index ).iActive.iVertices.data(),
+				           GL_STATIC_DRAW);
+				           
+			at( Index ).iActive.iVertices.clear();
+		}
+		
+		if ( at( Index ).iActive.iColours.size() != 0 )
+		{
+			glGenBuffers(1, &at( Index ).iActive.iColourBO);
+			glBindBuffer(GL_ARRAY_BUFFER, at( Index ).iActive.iColourBO);
+	
+			glBufferData(GL_ARRAY_BUFFER,
+	    		         at( Index ).iActive.iColours.size() * sizeof(GL_FLOAT),
+	    		         at( Index ).iActive.iColours.data(),
+	    		         GL_STATIC_DRAW);
+		
+			at( Index ).iActive.iColours.clear();
+		}
+		
+		// Set flag to indicate object meshes have been initialized.
+		
+		at( Index ).iInitialized = true;
+	}
+
+	glEnable(GL_CULL_FACE);
+
+	Enigma::Matrix4 matrix;
+	matrix.identity();  
 
   GLfloat TranslateX;
   GLfloat TranslateY;
@@ -398,27 +477,7 @@ void CMeshList::Render( const CMapObject& aObject,
   int ViewerSurface  = (int)aViewer.iSurface;
   int ViewerRotation = (int)aViewer.iRotation;
 
-  // [ Transformation #6 ]
-  // Apply player fine rotation offset.
-
-  glRotatef( (GLfloat)aViewer.iOffset.iRotateEast * -90, 1, 0, 0 );
-  glRotatef( (GLfloat)aViewer.iOffset.iRotateAbove * -90, 0, 1, 0 );
-  glRotatef( (GLfloat)aViewer.iOffset.iRotateNorth * 90, 0, 0, 1 );
-
-  // [ Transformation #4 ]
-  // Rotate the translated view of the object so it appears correctly
-  // to a viewer from the viewer's surface.
-
-  RotateX = (GLfloat)KViewerRotateX[ ViewerSurface ] * -90; 
-  RotateY = (GLfloat)KViewerRotateY[ ViewerSurface ][ ViewerRotation ] * -90;  
-  RotateZ = (GLfloat)KViewerRotateZ[ ViewerSurface ] * -90;
-
-  glRotatef( RotateY, 0, 1, 0 );
-  glRotatef( RotateZ, 0, 0, 1 );
-  glRotatef( RotateX, 1, 0, 0 );
-  
-  // [ Transformation #3 ]
-  // Translate the object within model space.  SkyObjects remain in a fixed
+	// Translate the object within model space.  SkyObjects remain in a fixed
   // location around the viewer.
   
   if ( aObject.iID != EnigmaWC::ID::ESkyObjects )
@@ -436,9 +495,7 @@ void CMeshList::Render( const CMapObject& aObject,
     TranslateZ = (GLfloat)KObjectTranslateZ[ ObjectSurface ]
                + ((gfloat)aViewer.iLocation.iNorth  
                - aObject.iLocation.iNorth
-               + aViewer.iOffset.iNorth ) * 2; 
-
-    glTranslatef( TranslateX, TranslateY, TranslateZ );
+               + aViewer.iOffset.iNorth ) * 2;
   }
   else
   {
@@ -446,27 +503,8 @@ void CMeshList::Render( const CMapObject& aObject,
     TranslateY = 0;
     TranslateZ = 0;
   }
-  
-  // [ Transformation #2 ]
-  // Rotate the view so the object is on its surface.  The object will
-  // appear as it should to a viewer on the Below surface facing North.
-  
-  RotateX = (GLfloat)KObjectRotateX[ ObjectSurface ] * 90;
-  RotateY = (GLfloat)KObjectRotateY[ ObjectSurface ] * 90;
-          
-  glRotatef( RotateX, 1, 0, 0 );
-  glRotatef( RotateY, 0, 1, 0 );
 
-  // [ Transformation #1 ]
-  // All object meshes are drawn centered at the origin (0, 0, 0) on the
-  // model space X-Y plane, rising up along the positive Z axis.  Rotate
-  // the view so the object will be oriented properly on its surface.
-  
-  RotateZ = (GLfloat)KObjectRotateZ[ ObjectSurface ][ ObjectRotation ] * 90;
-
-  glRotatef( RotateZ, 0, 0, 1 );
-
-  if ( aObject.iID == EnigmaWC::ID::EPlayer )
+	if ( aObject.iID == EnigmaWC::ID::EPlayer )
   {
     // Do not draw a Player object if it is too close, since this would
     // show the Player mesh object from inside.
@@ -488,14 +526,11 @@ void CMeshList::Render( const CMapObject& aObject,
   else if ( aObject.iID == EnigmaWC::ID::EWallEyes )
   {
     // Rotate a WallEyes so it follows the player.
-    
-    // [ WallEyes Transformation #2 ]
-    // Translate the rotated image mesh back to its original location
-    // in the X-Y plane.
-    
-    glTranslatef( KWallEyesOffsetX, KWallEyesOffsetY, KWallEyesOffsetZ );
+    // Translate the image mesh so the eyes are centered in the X-Y plane
+    // before being rotated.
+ 
+    matrix.translate(-KWallEyesOffsetX, -KWallEyesOffsetY, -KWallEyesOffsetZ);
 
-    // [ WallEyes Transformation #1 ]
     // Transform the translation values into those for a WallEyes in the
     // X-Y plane (eyes are in-line along the X-axis).Then rotate the image
     // mesh about the X and Y axis so the Walleyes face the viewer.
@@ -526,15 +561,14 @@ void CMeshList::Render( const CMapObject& aObject,
       RotateX = (GLfloat)atan( DeltaY / DeltaZ ) * ( 180.0 / 3.1416 ); 
       RotateY = (GLfloat)atan( DeltaX / DeltaZ ) * ( 180.0 / 3.1416 );
   
-      glRotatef( RotateY, 0, 1, 0 );
-      glRotatef( RotateX, 1, 0, 0 );
+  		matrix.rotate_y(RotateY);
+      matrix.rotate_z(RotateX);
     }
     
-    // [ WallEyes Transformation #0 ]
-    // Translate the image mesh so the eyes are centered in the X-Y plane
-    // before being rotated.
- 
-    glTranslatef( -KWallEyesOffsetX, -KWallEyesOffsetY, -KWallEyesOffsetZ );
+    // Translate the rotated image mesh back to its original location
+    // in the X-Y plane.
+    
+    matrix.translate(KWallEyesOffsetX, KWallEyesOffsetY, KWallEyesOffsetZ);
   }
   else if ( aObject.iID == EnigmaWC::ID::ELightBeam )
   {
@@ -567,13 +601,13 @@ void CMeshList::Render( const CMapObject& aObject,
   {
     // Apply a small rotation to a Fish object so it swims around Viewer.
   
-    glRotatef( (GLfloat)iFishSwim, 0, 0, 1 );
+    matrix.rotate_z((GLfloat)iFishSwim);
 
     // Apply a small rotation around the center of a Fish object.
   
-    glTranslatef( KFishOffsetX, KFishOffsetY, 0 );
-    glRotatef( (GLfloat)iFishTurn, 0, 0, 1 );
-    glTranslatef( -KFishOffsetX, -KFishOffsetY, 0 );
+    matrix.translate(KFishOffsetX, KFishOffsetY, 0);
+    matrix.rotate_z((GLfloat)iFishTurn);
+    matrix.translate(-KFishOffsetX, -KFishOffsetY, 0);
   }
   else if ( aObject.iID == EnigmaWC::ID::EWaterLayer )
   {    
@@ -582,36 +616,279 @@ void CMeshList::Render( const CMapObject& aObject,
 
     glDisable(GL_CULL_FACE);
   }
-  
-  // The object is now positioned properly in the viewer's space.
-  // Set the object mesh information before drawing.
 
-  if ( aObject.iState.GetState() )
-  {
-    // Draw active state mesh.
-    
-    glVertexPointer( 3, GL_FLOAT, 0, at( Index ).iActive.iVertices.data() );
-    glColorPointer( 3, GL_FLOAT, 0, at( Index ).iActive.iColours.data() );
-	
-    glDrawElements( GL_TRIANGLES,
-                    at( Index ).iActive.iFaces.size(),
-                    GL_UNSIGNED_INT,
-                    at( Index ).iActive.iFaces.data() );
+	// All object meshes are drawn centered at the origin (0, 0, 0) on the
+  // model space X-Y plane, rising up along the positive Z axis.  Rotate
+  // the view so the object will be oriented properly on its surface.
+  
+  RotateZ = (GLfloat)KObjectRotateZ[ ObjectSurface ][ ObjectRotation ] * 90;
+  
+  matrix.rotate_z(RotateZ);
+  
+  // Rotate the view so the object is on its surface.  The object will
+  // appear as it should to a viewer on the Below surface facing North.
+  
+  RotateX = (GLfloat)KObjectRotateX[ ObjectSurface ] * 90;
+  RotateY = (GLfloat)KObjectRotateY[ ObjectSurface ] * 90;
+          
+  matrix.rotate_x(RotateX);
+  matrix.rotate_y(RotateY);
+
+	// Apply all transations.
+ 	
+ 	matrix.translate(TranslateX, TranslateY, TranslateZ);
+
+	// Rotate the translated view of the object so it appears correctly
+  // to a viewer from the viewer's surface.
+
+  RotateX = (GLfloat)KViewerRotateX[ ViewerSurface ] * -90;
+  RotateY = (GLfloat)KViewerRotateY[ ViewerSurface ][ ViewerRotation ] * -90;
+  RotateZ = (GLfloat)KViewerRotateZ[ ViewerSurface ] * -90;
+
+  matrix.rotate_y(RotateY);
+  matrix.rotate_z(RotateZ);
+  matrix.rotate_x(RotateX);
+
+  // Apply player fine rotation offset.
+
+  matrix.rotate_x((GLfloat)aViewer.iOffset.iRotateEast * -90);
+  matrix.rotate_y((GLfloat)aViewer.iOffset.iRotateAbove * -90);
+  matrix.rotate_z((GLfloat)aViewer.iOffset.iRotateNorth * 90);
+
+/*
+  // [ Transformation #6 ]
+  // Apply player fine rotation offset.
+
+  matrix.rotate_x((GLfloat)aViewer.iOffset.iRotateEast * -90);
+  matrix.rotate_y((GLfloat)aViewer.iOffset.iRotateAbove * -90);
+  matrix.rotate_z((GLfloat)aViewer.iOffset.iRotateNorth * 90);
+
+  // [ Transformation #4 ]
+  // Rotate the translated view of the object so it appears correctly
+  // to a viewer from the viewer's surface.
+
+  RotateX = (GLfloat)KViewerRotateX[ ViewerSurface ] * -90;
+  RotateY = (GLfloat)KViewerRotateY[ ViewerSurface ][ ViewerRotation ] * -90;
+  RotateZ = (GLfloat)KViewerRotateZ[ ViewerSurface ] * -90;
+
+  matrix.rotate_y(RotateY);
+  matrix.rotate_z(RotateZ);
+  matrix.rotate_x(RotateX);
+ 
+  // [ Transformation #3 ]
+  // Translate the object within model space.  SkyObjects remain in a fixed
+  // location around the viewer.
+  
+  if ( aObject.iID != EnigmaWC::ID::ESkyObjects )
+  { 
+    TranslateX = (GLfloat)KObjectTranslateX[ ObjectSurface ]
+               + ((gfloat)aViewer.iLocation.iEast  
+               - aObject.iLocation.iEast
+               + aViewer.iOffset.iEast ) * -2;
+               
+    TranslateY = (GLfloat)KObjectTranslateY[ ObjectSurface ]
+               + ((gfloat)aViewer.iLocation.iAbove  
+               - aObject.iLocation.iAbove
+               + aViewer.iOffset.iAbove ) * -2;
+               
+    TranslateZ = (GLfloat)KObjectTranslateZ[ ObjectSurface ]
+               + ((gfloat)aViewer.iLocation.iNorth  
+               - aObject.iLocation.iNorth
+               + aViewer.iOffset.iNorth ) * 2; 
+
+    matrix.translate(TranslateX, TranslateY, TranslateZ);
   }
   else
   {
-    // Draw inactive state mesh.
-  
-    glVertexPointer( 3, GL_FLOAT, 0, at( Index ).iInactive.iVertices.data() );
-    glColorPointer( 3, GL_FLOAT, 0, at( Index ).iInactive.iColours.data() );
-	
-    glDrawElements( GL_TRIANGLES,
-                    at( Index ).iInactive.iFaces.size(),
-                    GL_UNSIGNED_INT,
-                    at( Index ).iInactive.iFaces.data() );
+    TranslateX = 0;
+    TranslateY = 0;
+    TranslateZ = 0;
   }
   
-  return;
+  // [ Transformation #2 ]
+  // Rotate the view so the object is on its surface.  The object will
+  // appear as it should to a viewer on the Below surface facing North.
+  
+  RotateX = (GLfloat)KObjectRotateX[ ObjectSurface ] * 90;
+  RotateY = (GLfloat)KObjectRotateY[ ObjectSurface ] * 90;
+          
+  matrix.rotate_x(RotateX);
+  matrix.rotate_y(RotateY);
+
+  // [ Transformation #1 ]
+  // All object meshes are drawn centered at the origin (0, 0, 0) on the
+  // model space X-Y plane, rising up along the positive Z axis.  Rotate
+  // the view so the object will be oriented properly on its surface.
+  
+  RotateZ = (GLfloat)KObjectRotateZ[ ObjectSurface ][ ObjectRotation ] * 90;
+
+  matrix.rotate_z(RotateZ);
+
+  if ( aObject.iID == EnigmaWC::ID::EPlayer )
+  {
+    // Do not draw a Player object if it is too close, since this would
+    // show the Player mesh object from inside.
+
+    TranslateX -= (GLfloat)KObjectTranslateX[ ObjectSurface ];
+    TranslateY -= (GLfloat)KObjectTranslateY[ ObjectSurface ];
+    TranslateZ -= (GLfloat)KObjectTranslateZ[ ObjectSurface ];
+
+    if  (( TranslateX > -KPlayerLimit )
+      && ( TranslateX < KPlayerLimit )
+      && ( TranslateY > -KPlayerLimit )
+      && ( TranslateY < KPlayerLimit )
+      && ( TranslateZ > -KPlayerLimit )
+      && ( TranslateZ < KPlayerLimit ))
+    {
+      return;
+    }
+  }
+  else if ( aObject.iID == EnigmaWC::ID::EWallEyes )
+  {
+    // Rotate a WallEyes so it follows the player.
+    
+    // [ WallEyes Transformation #2 ]
+    // Translate the rotated image mesh back to its original location
+    // in the X-Y plane.
+    
+    matrix.translate(KWallEyesOffsetX, KWallEyesOffsetY, KWallEyesOffsetZ);
+
+    // [ WallEyes Transformation #1 ]
+    // Transform the translation values into those for a WallEyes in the
+    // X-Y plane (eyes are in-line along the X-axis).Then rotate the image
+    // mesh about the X and Y axis so the Walleyes face the viewer.
+    
+    GLfloat DeltaX;
+    GLfloat DeltaY;
+    GLfloat DeltaZ;  
+
+    guint8 Index = KTransformIndexes[ ObjectSurface ][ ObjectRotation ];
+    
+    DeltaX = TranslateX * KTransformMatrices[ Index ][ 0 ]
+           + TranslateY * KTransformMatrices[ Index ][ 1 ]
+           + TranslateZ * KTransformMatrices[ Index ][ 2 ]
+           - KWallEyesOffsetX;
+
+    DeltaY = TranslateX * KTransformMatrices[ Index ][ 3 ]
+           + TranslateY * KTransformMatrices[ Index ][ 4 ]
+           + TranslateZ * KTransformMatrices[ Index ][ 5 ]
+           - KWallEyesOffsetY;
+           
+    DeltaZ = TranslateX * KTransformMatrices[ Index ][ 6 ]
+           + TranslateY * KTransformMatrices[ Index ][ 7 ]
+           + TranslateZ * KTransformMatrices[ Index ][ 8 ]
+           - KWallEyesOffsetZ;
+    
+    if ( DeltaZ != 0 )
+    {
+      RotateX = (GLfloat)atan( DeltaY / DeltaZ ) * ( 180.0 / 3.1416 ); 
+      RotateY = (GLfloat)atan( DeltaX / DeltaZ ) * ( 180.0 / 3.1416 );
+  
+      matrix.rotate_y(RotateY);
+      matrix.rotate_z(RotateX);
+    }
+    
+    // [ WallEyes Transformation #0 ]
+    // Translate the image mesh so the eyes are centered in the X-Y plane
+    // before being rotated.
+ 
+    matrix.translate(-KWallEyesOffsetX, -KWallEyesOffsetY, -KWallEyesOffsetZ);
+  }
+  else if ( aObject.iID == EnigmaWC::ID::ELightBeam )
+  {
+    // Do not draw a LightBeam too far out of line with the viewer.
+    
+    GLfloat DeltaX;
+    GLfloat DeltaY;
+
+    guint8 Index = KTransformIndexes[ ObjectSurface ][ ObjectRotation ];
+    
+    DeltaX = TranslateX * KTransformMatrices[ Index ][ 0 ]
+           + TranslateY * KTransformMatrices[ Index ][ 1 ]
+           + TranslateZ * KTransformMatrices[ Index ][ 2 ]
+           - KLightBeamOffsetX;
+
+    DeltaY = TranslateX * KTransformMatrices[ Index ][ 3 ]
+           + TranslateY * KTransformMatrices[ Index ][ 4 ]
+           + TranslateZ * KTransformMatrices[ Index ][ 5 ]
+           - KLightBeamOffsetY;
+           
+    if  (( DeltaX > KLightBeamWidth )
+      || ( DeltaX < -KLightBeamWidth )
+      || ( DeltaY > KLightBeamWidth )
+      || ( DeltaY < -KLightBeamWidth ))
+    {
+      return;
+    }
+  }
+  else if ( aObject.iID == EnigmaWC::ID::EFish )
+  {
+    // Apply a small rotation to a Fish object so it swims around Viewer.
+  
+    matrix.rotate_z((GLfloat)iFishSwim);
+
+    // Apply a small rotation around the center of a Fish object.
+  
+    matrix.translate(KFishOffsetX, KFishOffsetY, 0);
+    matrix.rotate_z((GLfloat)iFishTurn);
+    matrix.translate(-KFishOffsetX, -KFishOffsetY, 0);
+  }
+  else if ( aObject.iID == EnigmaWC::ID::EWaterLayer )
+  {    
+    // Disable back-face culling for the WaterLayer so the underside will be
+    // visible when the player is under it.
+
+    glDisable(GL_CULL_FACE);
+  }
+*/
+
+ //TEMP
+ matrix.translate(0, 0, CAMERA_OFFSET);
+ 
+  // Pass the transformation matrix to the mTransform uniform.
+
+	glUniformMatrix4fv(imTransform, 1, GL_FALSE, matrix.array());
+  
+  // The object is now positioned properly in the viewer's space.
+  // Choose object mesh data based on the object's state.
+
+	GLuint PositionBO = 0;
+	GLuint ColourBO   = 0;
+
+	if ( aObject.iState.GetState() )
+	{
+		PositionBO = at( Index ).iActive.iPositionBO;
+		ColourBO   = at( Index ).iActive.iColourBO;
+	}
+	else
+	{
+		PositionBO = at( Index ).iInactive.iPositionBO;
+		ColourBO   = at( Index ).iInactive.iColourBO;
+	}
+
+	if (( PositionBO != 0 ) && ( ColourBO != 0 ))
+	{
+		// Attach vertex position buffer to the vPosition vertex attribute.
+
+		glBindBuffer(GL_ARRAY_BUFFER, PositionBO);
+		glVertexAttribPointer(ivPosition, 3, GL_FLOAT, GL_FALSE, 0, 0);
+				
+		// Calculate the total number of vertices to be rendered.
+		
+		GLint total;
+
+		glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &total);
+		total = total / (sizeof(GL_FLOAT) * 3);
+
+		// Attach vertex colour buffer to the vColour vertex attribute.
+		
+		glBindBuffer(GL_ARRAY_BUFFER, ColourBO);
+		glVertexAttribPointer(ivColour, 4, GL_FLOAT, GL_FALSE, 0, 0);
+		
+		// Draw the mesh.
+		
+		glDrawArrays(GL_TRIANGLES, 0, total);
+	}
 }
 
 //*--------------------------------------------*
@@ -677,4 +954,123 @@ void CMeshList::Animate()
   }
 
   return;
+}
+
+//----------------------------------------------------------------------
+// This method initializes the MeshList within an active OpenGL context.
+//----------------------------------------------------------------------
+
+void CMeshList::Initialize()
+{
+	// Create a shader program.
+	
+	GLuint program = glCreateProgram();
+	
+	// Read vertex shader code from the resource bundle.
+	
+	Glib::RefPtr<const Glib::Bytes> byte_array;
+	GLchar* code;
+	gsize size;
+	std::string path;
+
+	path = "/org/game/EnigmaWC/Shaders/";
+	path += vertex_shader_code;
+	
+	byte_array =
+		Gio::Resource::lookup_data_global(path, Gio::RESOURCE_LOOKUP_FLAGS_NONE);
+	
+	GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+	code                 = (GLchar*)byte_array->get_data(size);
+	
+	glShaderSource(vertex_shader, 1, &code, NULL);
+	
+	// Compile vertex shader code and attach it to the shader program.
+	
+	glCompileShader(vertex_shader);
+	glAttachShader(program, vertex_shader);
+	
+	// Read fragment shader code from the resource bundle.
+
+	path = "/org/game/EnigmaWC/Shaders/";
+	path += fragment_shader_code;
+
+	byte_array =
+		Gio::Resource::lookup_data_global(path, Gio::RESOURCE_LOOKUP_FLAGS_NONE);
+		                                  
+	GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+	code                   = (GLchar*)byte_array->get_data(size);
+	
+	glShaderSource(fragment_shader, 1, &code, NULL);
+	
+	// Compile vertex shader code and attach it to the shader program.
+	
+	glCompileShader(fragment_shader);
+	glAttachShader(program, fragment_shader);
+
+	// Link shader program containing the two compiled shaders, then check	
+	// the program link status.  If linking was not successful, output
+	// linking log as an error message.
+	
+	glLinkProgram(program);
+	
+	GLint status = GL_FALSE;
+	glGetProgramiv(program, GL_LINK_STATUS, &status);
+	
+	if (status == GL_FALSE)
+	{
+		std::cerr << "Failed linking of shader program." << std::endl;
+		
+		GLint length;
+		glGetShaderiv(program, GL_INFO_LOG_LENGTH, &length);
+
+		if (length > 0)
+		{
+			GLchar log[length];
+			glGetProgramInfoLog(program, sizeof(log), NULL, log);
+			std::cerr << log << std::endl;
+		}
+		else
+			std::cerr << "No linking log available." << std::endl;
+	}
+
+	// The linked program is now ready to use.
+	
+	glUseProgram(program);
+	
+	// Record the shader attribute and uniform locations assigned by the linker.
+	
+	ivPosition   = glGetAttribLocation(program, "vPosition");
+	ivColour     = glGetAttribLocation(program, "vColour");
+	imTransform  = glGetUniformLocation(program, "mTransform");
+	
+	// Unbind and delete the shaders since they are no longer needed
+	// once the program has been linked.
+	
+	glDetachShader(program, vertex_shader);
+	glDetachShader(program, fragment_shader);
+	glDeleteShader(vertex_shader);
+	glDeleteShader(fragment_shader);
+		
+	// Create and bind a common Vertex Array Object to use when rendering
+	// all Mesh objects.
+	
+	GLuint vao;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+	
+	// Enable all vertex attributes.
+	
+	glEnableVertexAttribArray(ivPosition);
+	glEnableVertexAttribArray(ivColour);
+	
+	// Set a perspective projection matrix.  This remains constant
+	// for all rendering.
+
+	GLint mProjection = glGetUniformLocation(program, "mProjection");	
+	
+	Enigma::Matrix4 matrix;
+	matrix.perspective(FIELD_OF_VIEW, ASPECT_RATIO,
+	                   NEAR_CLIP, FAR_CLIP);
+
+	glUniformMatrix4fv(mProjection, 1, GL_FALSE, matrix.array());
 }

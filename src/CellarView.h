@@ -13,7 +13,7 @@
 
 #include <gtkmm.h>
 #include "GLArea.h"
-#include "Mesh.h"
+#include "MeshList.h"
 
 class CCellarView : public Gtk::GLArea //public CGLArea
 {
@@ -40,14 +40,14 @@ class CCellarView : public Gtk::GLArea //public CGLArea
   protected:
     // Overridden base class methods.
 		
-    bool on_map_event(GdkEventAny* aEvent );
-    //gboolean on_render();
+    bool on_map_event(GdkEventAny* aEvent ) override;
     bool on_render(const Glib::RefPtr<Gdk::GLContext>& context) override;
+		void on_realize() override;
 
   private:
     // Private data.
 
-    CMesh iMesh;                        // Wine cellar image mesh.
+    CMeshList iMeshList;
     type_signal_done m_signal_done;     // View done signal server.
     type_slot_timeout m_slot_timeout;   // Visual delay timeout signal slot.
 };

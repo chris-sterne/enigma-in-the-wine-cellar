@@ -52,10 +52,11 @@ enigma_in_the_wine_cellar_SOURCES = \
   MapController.cpp \
   MapControllerList.cpp \
   Connection.cpp \
+  Matrix4.cpp \
 	EnigmaWC.gresource.cpp
 	
 EnigmaWC.gresource.cpp: \
 	EnigmaWC.gresource.xml
 	-glib-compile-resources EnigmaWC.gresource.xml \
-		--target=EnigmaWC.gresource.cc --generate-source
+		--target=EnigmaWC.gresource.cpp --generate-source
 

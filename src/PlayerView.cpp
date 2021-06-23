@@ -17,6 +17,11 @@
 
 CPlayerView::CPlayerView()
 { 
+  set_required_version(3, 2);
+  set_auto_render(true);
+  set_has_depth_buffer(true);
+  set_use_es(false);
+  
   // Initialize instance data.
 
   iFrontKey        = 0;
@@ -98,6 +103,24 @@ void CPlayerView::on_size_allocate( Gtk::Allocation& allocation )
 
 	iScreenInput.SetBounds( allocation );
 	return;
+}
+
+//----------------------------------------------------
+// This method is called after the widget is realized.
+//----------------------------------------------------
+
+void CPlayerView::on_realize()
+{
+	// Pass method to parent class.  A Gtk:ERROR will occur otherwise,
+	// suggesting the GLArea child class utilizes the method.
+	
+	Gtk::GLArea::on_realize();
+	
+	// Active the current OpenGL context and initialize the ViewCone
+	// within the context.
+
+	make_current();
+	iViewCone.Initialize();
 }
 
 //*---------------------------------------------------------------------*

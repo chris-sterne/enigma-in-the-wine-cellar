@@ -26,6 +26,7 @@ class CViewCone : public sigc::trackable
     gint64 GetRenderTime();
     void Fill( guint8 aSelect );
     void Render();
+    void Initialize();
 
   private:
     // Private data.

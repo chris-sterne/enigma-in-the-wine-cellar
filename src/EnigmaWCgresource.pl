@@ -15,37 +15,26 @@
 use strict;
 use warnings;
 
-#---------------------------------------------------------#
-#          ASCII to BINARY Mesh File Conversion           #
-#---------------------------------------------------------#
+# All Blender .ply format mesh files are converted into custom .msh
+# format files that can be efficiently loaded as an Linux OS resource.
+# The maximum number of vertices is 65536 (a warning will be printed if
+# the total exceeds this maximum). 
+#
+# The binary (little-endian byte) format of the .msh files is as follows:
+#
+# File identifier (4-byte "msh\n")
+# Total vertices (4-byte integer)
+# Array of vertex coordinates (X, Y, Z) (3 x 4-byte floats)
+# Array of vertex colours (R, G, B, A) (4 x 4-byte floats) 
 
-# The following table contains the number of bytes used for data types
-# in binary PLY mesh files.
-
-# name        type        number of bytes
-# ---------------------------------------
-# char       character                 1
-# uchar      unsigned character        1
-# short      short integer             2
-# ushort     unsigned short integer    2
-# int        integer                   4
-# uint       unsigned integer          4
-# float      single-precision float    4
-# double     double-precision float    8
-
-# The Source directory contains ascii image mesh files.
-# These will be converted into binary (big-endian) image mesh files
-# in the destination directory.  The binary image mesh file will have
-# the same name as the ascii image mesh file.
-
-my $SourceDirectoryName      = "Blender";
+my $SourceDirectoryName = "Blender";
 my $DestinationDirectoryName = "Meshes";
 
-# Delete all binary image mesh files in the destination directory.
+# Delete all binary mesh files in the destination directory.
 
-print `rm ./$DestinationDirectoryName/*`;
+print `rm ./$DestinationDirectoryName/*.msh`;
 
-# Open directory containing ascii image mesh files. 
+# Open source directory of ASCII mesh files. 
 
 opendir( my $SourceDirectoryHandle, $SourceDirectoryName )
   or die "Could not open directory: ", $SourceDirectoryName;
@@ -58,16 +47,17 @@ while ( my $FileName = readdir( $SourceDirectoryHandle ))
   next unless ( -f "$SourceDirectoryName/$FileName" );
   next unless ( $FileName =~ /\.ply/ );
 
-  print "Processing ascii image mesh file: $FileName \n";
+  print "Processing ASCII image mesh file: $FileName \n";
 
   open( my $SourceFileHandle, '<:encoding(UTF-8)', "$SourceDirectoryName/$FileName" ) 
     or die "Could not open image mesh file for reading: ", $FileName;
 
   # Examine each row of the image mesh file header.
 
+  my @elements = ();
+  my @totals = ();
+
   my @parts;
-  my @elements;
-  my @totals;
   my $ascii = 0;
 
   while (my $row = <$SourceFileHandle>)
@@ -107,54 +97,11 @@ while ( my $FileName = readdir( $SourceDirectoryHandle ))
     }
   }
 
-  # Open a binary mesh file for writing.  This file will have the same name
-  # as the source file, but will be in a different directory.
-
-  open( my $DestinationFileHandle, '>', "$DestinationDirectoryName/$FileName" )
-    or die "Could not open binary mesh file for writing: ", $FileName;
-
-  # Write the binary mesh file header.
-
-  print $DestinationFileHandle "ply\n";
-  print $DestinationFileHandle "comment Enigma in the Wine Cellar 3 object mesh\n";
-  print $DestinationFileHandle "format binary_big_endian 1.0\n";
+  my @coordinates = ();
+  my @colours  = ();
+  my @indices  = ();
 
   my $index = 0;
-
-  foreach ( @elements )
-  {
-    if ( $_ =~ /vertex/ )
-    {
-      print $DestinationFileHandle "element vertex $totals[ $index ]\n";
-      print $DestinationFileHandle "property float x\n";
-      print $DestinationFileHandle "property float y\n";
-      print $DestinationFileHandle "property float z\n";
-      print $DestinationFileHandle "property uchar red\n";
-      print $DestinationFileHandle "property uchar green\n";
-      print $DestinationFileHandle "property uchar blue\n";
-    }
-    elsif ( $_ =~ /face/ )
-    {
-      print $DestinationFileHandle "element face $totals[ $index ]\n";
-      print $DestinationFileHandle "property list uchar ushort vertex_indices\n";
-
-      # Display a warning if the mesh contains more vertices than can be accessed
-      # by the 16-bit indices in the face elements.
-
-      if ( $totals[ $index ] > 65536 )
-      {
-        print "*** WARNING *** Mesh contains more than 65536 vertices.\n";
-      }
-    }
-
-    $index ++;
-  }
-
-  print $DestinationFileHandle "end_header\n";
-
-  # Convert all ascii data into binary.
-
-  $index = 0;
 
   foreach ( @elements )
   {
@@ -166,17 +113,12 @@ while ( my $FileName = readdir( $SourceDirectoryHandle ))
         {
           @parts = split( /\s+/, $row );
 
-          # Write vertex coordinate X,Y,Z as single-precision 32-bit floats in big-endian format. 
+          # Store vertex coordinates X,Y,Z colours R,G,B,A.
+          # The normals X,Y,Z are ignored.  The Alpha channel
+          # value is set to maximum.
 
-          print $DestinationFileHandle pack( 'f>', $parts[ 0 ] );
-          print $DestinationFileHandle pack( 'f>', $parts[ 1 ] );
-          print $DestinationFileHandle pack( 'f>', $parts[ 2 ] );
-
-          # Write vertex color R,G,B as unsigned 8-bit characters.
-
-          print $DestinationFileHandle pack( 'C', $parts[6] );
-          print $DestinationFileHandle pack( 'C', $parts[7] );
-          print $DestinationFileHandle pack( 'C', $parts[8] );
+          push @coordinates, $parts[ 0 ], $parts[ 1 ], $parts[ 2 ];
+          push @colours, $parts[ 6 ], $parts[ 7 ], $parts[ 8 ], 255;
         }
 
         $totals[ $index ] --;
@@ -190,17 +132,11 @@ while ( my $FileName = readdir( $SourceDirectoryHandle ))
         {
           @parts = split( /\s+/, $row );
 
-          # Write face vertex count as an unsigned 8-bit character.
+          # Store face vertex indices.
 
-          print $DestinationFileHandle pack( 'C', $parts[0] );
+	  push @indices, $parts[ 1 ], $parts[ 2 ], $parts[ 3 ];
 
-          # Write face vertex indices as unsigned 16-bit integers in bit-endian format.
-
-          print $DestinationFileHandle pack( 'S>', $parts[1] );
-          print $DestinationFileHandle pack( 'S>', $parts[2] );
-          print $DestinationFileHandle pack( 'S>', $parts[3] );
-
-          # Display a warning if the face has more than 3 vertices.
+          # Display a warning if the face uses more than three indices.
 
           if ( $parts[0] != 3 )
           {
@@ -215,11 +151,63 @@ while ( my $FileName = readdir( $SourceDirectoryHandle ))
     $index ++;  
   }
 
-  # Close the source and destination image mesh files.
+  # Close the source image mesh file.
 
   close( $SourceFileHandle );
+
+  # Open a binary mesh file for writing.  The first part of this file's name
+  # will be the same as the source file and will have a '.msh' extension.
+  # e.g. BlockWall_A.ply -> BlockWall_A.msh
+
+  $FileName =~ s/.ply/.msh/;
+
+  open( my $DestinationFileHandle, '>', "$DestinationDirectoryName/$FileName" )
+    or die "Could not open binary mesh file for writing: ", $FileName;
+
+  # Write the binary mesh file header.
+
+  print $DestinationFileHandle "msh\n";
+  print $DestinationFileHandle pack( 'L<', scalar @indices );
+
+  # Write the array of vertex coordinates.
+
+  foreach ( @indices )
+  {
+    $index = $_ * 3;
+
+    print $DestinationFileHandle pack( 'f<', $coordinates[$index + 0] );
+    print $DestinationFileHandle pack( 'f<', $coordinates[$index + 1] ); 
+    print $DestinationFileHandle pack( 'f<', $coordinates[$index + 2] ); 
+  }	  
+
+  # Write the array of vertex colours.
+
+  foreach ( @indices )
+  {
+    $index = $_ * 4;
+
+    print $DestinationFileHandle pack( 'f<', $colours[$index + 0] / 255.0 );
+    print $DestinationFileHandle pack( 'f<', $colours[$index + 1] / 255.0 ); 
+    print $DestinationFileHandle pack( 'f<', $colours[$index + 2] / 255.0 );
+    print $DestinationFileHandle pack( 'f<', $colours[$index + 3] / 255.0 ); 
+  }
+
+  # Display a warning if the total number of faces exceeds a 2-byte value
+  # (the face vertex indices are only 2-byte values).
+
+  if ( scalar @coordinates > 65535*3 )
+  {
+    print "*** WARNING *** Mesh contains more than 65536 vertices.\n";
+  }
+
+  # Close the destination image mesh file.
+
   close( $DestinationFileHandle );
 }
+
+# Close source image mesh directory.
+
+close( $SourceDirectoryHandle );
 
 #---------------------------------------------------------#
 #                Resource Integration                     #
@@ -246,12 +234,12 @@ my $DirectoryName = 'Meshes';
 opendir( my $DirectoryHandle, $DirectoryName )
   or die "Could not open directory: ", $DirectoryName;
 
-# Process each file that has a ".ply" extension.
+# Process each file that has a ".msh" extension.
 
 while ( my $FileName = readdir( $DirectoryHandle ))
 {
   next unless ( -f "$DirectoryName/$FileName" );
-  next unless ( $FileName =~ /\.ply/ );
+  next unless ( $FileName =~ /\.msh/ );
 
   # Add line with resource name to XML file.
 
@@ -287,17 +275,36 @@ while ( my $FileName = readdir( $DirectoryHandle ))
 
 close( $DirectoryHandle );
 
+# Open directory of shader files. 
+
+$DirectoryName = 'Shaders';
+
+opendir( $DirectoryHandle, $DirectoryName )
+  or die "Could not open directory: ", $DirectoryName;
+
+# Process each file that has a ".glsl" extension.
+
+while ( my $FileName = readdir( $DirectoryHandle ))
+{
+  next unless ( -f "$DirectoryName/$FileName" );
+  next unless ( $FileName =~ /\.glsl/ );
+
+  # Add line with resource name to XML file.
+
+  print "Adding shader file name: $FileName \n";
+  print( $XMLHandle "    \<file\>Shaders/$FileName\</file\>\n" );
+}
+
+# Close shader directory.
+
+close( $DirectoryHandle );
+
 # Write the trailer lines of the XML block.
 
 print( $XMLHandle "  \</gresource\>\n" );
 print( $XMLHandle "\</gresources\>\n" );
 
 close( $XMLHandle );
-
-# Create source and header files.
-
-`glib-compile-resources --generate-source --target=../source/EnigmaWC.gresource.cpp $XMLName`;
-`glib-compile-resources --generate-header --target=../include/EnigmaWC.gresource.h $XMLName`;
 
 
 

@@ -267,18 +267,6 @@ void CViewCone::Render()
  
     iRenderTime = g_get_monotonic_time();
     
-    // Prepare OpenGL view space matrices.
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-
-    glFrustum( -0.1, 0.1, -0.1, 0.1, 0.1, 10 );
-    glScalef( 1, 1, 1 );
-    glTranslatef( 0, 0, -0.2 );
-  
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
-    
     // Render a background based on the player's environment.
 	
     if ( (*iPlayer).iOutdoor )
@@ -502,9 +490,6 @@ void CViewCone::Render()
       iMeshList.Render( iUseObject, *iPlayer );
       (*iPlayer).iOffset = Offset;
     }
-
-    glDisableClientState(GL_COLOR_ARRAY);
-    glDisableClientState(GL_VERTEX_ARRAY);
   }
 
   // The orientation of Fish objects is advanced after rendering each frame.
@@ -657,4 +642,13 @@ void CViewCone::Fill( guint8 aSelect )
   }
 
   return;
+}
+
+//----------------------------------------------------------------------
+// This method initializes the ViewCone within an active OpenGL context.
+//----------------------------------------------------------------------
+
+void CViewCone::Initialize()
+{
+	iMeshList.Initialize();
 }

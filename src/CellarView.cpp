@@ -11,6 +11,8 @@
  *-----------------------------------------------------*/
 
 #include <glibmm/i18n.h>
+#include "EnigmaWC.h"
+#include "MapObject.h"
 #include "CellarView.h"
 #include "Resources.h"
 #include <GL/gl.h>
@@ -23,9 +25,9 @@
 
 #define KVisualDelay 2              // 2 second delay.
 
-#define KIndoorR (GLfloat)30/255    // Dark indoor colour: Dark grey.
-#define KIndoorG (GLfloat)30/255
-#define KIndoorB (GLfloat)30/255
+#define KIndoorR (GLfloat)40/255    // Indoor colour: Dark grey.
+#define KIndoorG (GLfloat)40/255
+#define KIndoorB (GLfloat)40/255
 
 //*--------------------------*
 //* C++ default constructor. *
@@ -33,6 +35,11 @@
 
 CCellarView::CCellarView()
 {
+  set_required_version(3, 2);
+  set_auto_render(false);
+  set_has_depth_buffer(true);
+  set_use_es(false);
+
   // Request on_map_event signal be emitted when the widget becomes visible,
   // which will be used to trigger the startup screen.
 
@@ -46,15 +53,31 @@ CCellarView::CCellarView()
 
   // Create an image mesh for the wine cellar.
 
-  CResources Resources;
-  Resources.LoadImageMesh( iMesh, "WineCellar" );
+  //CResources Resources;
+  //Resources.LoadImageMesh( iMesh, "WineCellar" );
 
 	// Construct a signal slot for the visual delay timer.
 	
   m_slot_timeout = sigc::mem_fun( *this, &CCellarView::On_Timeout );
-
-
 	return;
+}
+
+//----------------------------------------------------
+// This method is called after the widget is realized.
+//----------------------------------------------------
+
+void CCellarView::on_realize()
+{
+	// Pass method to parent class.  A Gtk:ERROR will occur otherwise,
+	// suggesting the GLArea child class utilizes the method.
+	
+	Gtk::GLArea::on_realize();
+	
+	// Active the current OpenGL context and initialize the MeshList
+	// within the context.
+
+	//make_current();
+	//iMeshList.Initialize();
 }
 
 //*---------------------------------------------------------------------*
@@ -62,12 +85,13 @@ CCellarView::CCellarView()
 //*---------------------------------------------------------------------*
 
 bool CCellarView::on_map_event( GdkEventAny* aEvent )
-{
+{	
 	// Start a one-shot visual delay timer.
 	
-	Glib::signal_timeout().connect_seconds_once( slot_timeout(),
-																							 KVisualDelay,
-		                                 					 Glib::PRIORITY_DEFAULT );	
+	Glib::signal_timeout()
+		.connect_seconds_once(slot_timeout(),
+		                      KVisualDelay,
+		                      Glib::PRIORITY_DEFAULT );	
 	return FALSE;
 }
 
@@ -83,42 +107,31 @@ bool CCellarView::on_render(const Glib::RefPtr<Gdk::GLContext>& context)
   glClearColor( KIndoorR, KIndoorG, KIndoorB, -1 );
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	
-  // Exit if there is no wine cellar image mesh, or if the mesh is empty
-  // (possibly due to an error in the resource data).
-	
-  if ( iMesh.iActive.iVertices.empty() )
-    return TRUE;
+  // Prepare WineCellar object.
+  
+	CMapObject cellar;
+	cellar.iID = EnigmaWC::ID::EWineCellar;
+	cellar.iSurface = EnigmaWC::Direction::EBelow;
+	cellar.iRotation = EnigmaWC::Direction::ESouth;
+	cellar.iLocation.Clear();
+	cellar.iLocation.iNorth = 1;
+  cellar.iSense.SetState( FALSE );
+  cellar.iState.SetState( TRUE );
+  cellar.iVisibility.SetState( TRUE );
+  cellar.iPresence.SetState( TRUE );
 
-  // Prepare OpenGL matrices.
+	// Prepare viewer of WineCeller object.
 
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glFrustum( -.65, .65, -.65, .65, .65, 3 );
-	
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-
-  glTranslatef( 0, -0.8, -1.8 );
-	glRotatef( -90, 1, 0, 0 );
-	glRotatef( 180, 0, 0, 1 );
-	
-  // The object is now positioned properly in the model space.
-  // Set the object mesh information before drawing.
-	
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glEnableClientState(GL_COLOR_ARRAY);
-	
-  glVertexPointer( 3, GL_FLOAT, 0, iMesh.iActive.iVertices.data() );
-  glColorPointer( 3, GL_FLOAT, 0, iMesh.iActive.iColours.data() );
-	
-  glDrawElements( GL_TRIANGLES,
-                  iMesh.iActive.iFaces.size(),
-	                GL_UNSIGNED_INT,
-                  iMesh.iActive.iFaces.data() );
-	
-  glDisableClientState(GL_COLOR_ARRAY);
-  glDisableClientState(GL_VERTEX_ARRAY);
-
+	CMapPlayer viewer;
+	viewer.iID = EnigmaWC::ID::EPlayer;
+	viewer.iSurface = EnigmaWC::Direction::EBelow;
+	viewer.iRotation = EnigmaWC::Direction::ENorth;
+	viewer.iLocation.Clear();
+	viewer.iOffset.iNorth = 0.2f;
+  
+  // Render the WineCellar object.
+  
+  iMeshList.Render(cellar, viewer);
   return TRUE;
 }
 

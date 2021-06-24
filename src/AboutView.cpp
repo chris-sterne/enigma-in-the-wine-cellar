@@ -11,6 +11,7 @@
  *----------------------------------------------*/
 
 #include <glibmm/i18n.h>
+#include "config.h"
 #include "AboutView.h"
 
 //*---------------------*
@@ -57,7 +58,7 @@ CAboutView::CAboutView()
   Title->set_padding( 0, 3 );
 
   Gtk::Label* Version = Gtk::manage( new Gtk::Label );
-  Version->set_markup( _("<b>Version 5.0.1</b>") );
+  Version->set_markup( PACKAGE_VERSION );
   Version->set_hexpand(TRUE);
   Version->set_halign( Gtk::ALIGN_CENTER );
 	
@@ -77,16 +78,6 @@ CAboutView::CAboutView()
   Copyright->set_hexpand(TRUE);
 
   attach( *Copyright, 1, 1, 1, 1 );
-
-  // Prepare the Website URL button.
-	
-  Gtk::LinkButton* LinkButton = Gtk::manage( new Gtk::LinkButton );
-  LinkButton->set_uri( "http://enigmawc.shawwebspace.ca/" );
-  LinkButton->set_label( _("Website") );
-  LinkButton->set_halign( Gtk::ALIGN_CENTER );
-  LinkButton->set_hexpand(FALSE);
-
-  attach( *LinkButton, 1, 2, 1, 1 );
 	
   // Prepare the description TextView widget.
 	

@@ -139,9 +139,7 @@ void ReadLine( std::string& aString, guchar** aArray, gsize* aLength )
 //----------------------------------------------------------------------
 
 void ReadStateData( CMesh::CState& aState, const std::string& aPath )
-{
-printf("Resources ReadStateData %s\n", aPath.c_str());
-  
+{  
   // Extract the mesh data from the resource bundle.  Multi-byte values
 	// in this bundle are in little-endian format.
 	
@@ -210,10 +208,7 @@ printf("Resources ReadStateData %s\n", aPath.c_str());
 
 	// Stream resource data into the vertex position buffer.
 	
-	//std::vector<GLfloat> position;
-	//position.reserve(vertex_total * 3);
 	aState.iVertices.reserve(vertex_total * 3);
-		
 	int total = vertex_total * 3;
 	
 	while (total > 0)
@@ -235,10 +230,7 @@ printf("Resources ReadStateData %s\n", aPath.c_str());
 	
 	// Stream resource data into the vertex colour buffers.
 	
-	//std::vector<GLfloat> colour;
 	aState.iColours.reserve(vertex_total * 4);
-	//colour.reserve(vertex_total * 4);
-	
 	total = vertex_total * 4;
 	
 	while (total > 0)
@@ -257,194 +249,6 @@ printf("Resources ReadStateData %s\n", aPath.c_str());
 		total -= 1;
 		byte  += 4;
 	}
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  // Find the data in the resources.  Due to the Giomm Gio::Resource
-  // declaration being unrecognized, the C version of the lookup
-  // function is used instead.
-	
-  /*GResource* Resource	= EnigmaWC_get_resource();
-  GError* Error				= NULL;
-	
-  GBytes* Data = g_resource_lookup_data( Resource,
-                                         aPath.data(),
-                                         G_RESOURCE_LOOKUP_FLAGS_NONE,
-                                         &Error);
-
-  // Return immediately if the resource could not be found.
-	
-  if ( Data == NULL )
-    return;
-
-  gsize ArrayLength;
-  guchar* Array = (guchar*)g_bytes_get_data( Data, &ArrayLength );
-
-  // Return immediately if the resource data could not obtained.
-
-  if (( Array == NULL ) || ( ArrayLength == 0 ))
-    return;
-
-	// Fill the image mesh with data from its resource.
-	
-	std::vector<Glib::ustring> Arguments;
-	std::vector<Glib::ustring> Elements;
-	std::vector<int> Totals;
-
-	std::string Line;
-	guint ArgumentCount;
-		
-	// Read information from the mesh file header.
-	
-	while ( ArrayLength > 0 )
-	{
-		ReadLine( Line, &Array, &ArrayLength );
-		
-		Arguments     = Glib::Regex::split_simple( " |\n|\r", Line );
-		ArgumentCount = Arguments.size();
-
-		if ( ArgumentCount > 0 )
-		{
-			if ( Arguments.at( 0 ).compare( "element" ) == 0 )
-			{
-				if ( Arguments.at( 1 ).compare( "vertex" ) == 0 )
-				{
-					Elements.push_back( Arguments.at( 1 ) );
-					Totals.push_back( std::stoi( Arguments.at( 2 ) ));
-				}
-				else if ( Arguments.at( 1 ).compare( "face" ) == 0 )
-				{
-					Elements.push_back( Arguments.at( 1 ) );
-					Totals.push_back( std::stoi( Arguments.at( 2 ) ));
-				}
-			}
-			else if ( Arguments.at( 0 ).compare( "end_header" ) == 0 )
-			{
-				break;
-			}
-		}
-	}
-
-	// The very next line following the header will be the first line
-	// of the first block of element data.
-
-	guint Block = 0;
-	guint Counter;
-		
-	while ( Block < Totals.size() )
-	{
-		Counter = Totals.at( Block );
-		
-		if ( Elements.at( Block ).compare( "vertex" ) == 0 )
-		{
-			// Reserve vector space for the number of vertex values
-			// to be added.  This prevents possible multiple memory
-			// re-allocations as values are added to the vector.
-			
-			aState.iVertices.reserve( Counter * 6 );
-			
-			// Read all vertex data.
-						
-      union
-      {
-        GLuint Integer;
-        GLfloat Float;
-      } Convert;
-      
-      guint SubCounter; 
-     
-      while ( Counter != 0 ) 
-      {        
-        // Extract vertex coordinates (x, y, z) stored as 4-byte floating-point
-        // values in big-endian format.  The coordinate components are
-        // converted into floating values for OpenGL.
-			 
-			  SubCounter = 3;
-			 
-        do
-        {
-          Convert.Integer = (GLuint)(( *(Array + 0) << 24 )
-                                   | ( *(Array + 1) << 16 )
-                                   | ( *(Array + 2) << 8 )
-                                   |   *(Array + 3) );
-				  Array += 4;
-				  
-          aState.iVertices.push_back( Convert.Float );
-          -- SubCounter;
-        }
-        while ( SubCounter > 0 );
-        								
-        // Extract vertex colours (r, g, b) stored as 1-byte values  These
-        // colour components must be converted into floating values for OpenGL.
-			 
-        SubCounter = 3;
-			
-        do
-        {	        
-          aState.iColours.push_back( (GLfloat)(*Array) / 255 );
-          ++ Array;
-          -- SubCounter;
-        }
-        while ( SubCounter > 0 );
-
-				// Decrement the vertex counter.
-
-				-- Counter;
-			}
-		}
-		else if ( Elements.at( Block ).compare( "face" ) == 0 )
-		{
-			// Reserve vector space for the number of face values to be added.
-			// This prevents possible multiple memory re-allocations as values
-			// are added to the vector.
-
-			aState.iFaces.reserve( Counter * 3 );
-
-			// Read all face data.
-			
-			guint SubCounter;
-			GLuint Integer;
-
-			while ( Counter != 0 ) 
-			{
-			  // Extract the vertex indices counter stored as a 1-byte value.
-			
-			  SubCounter = (guint)(*Array);
-			  ++ Array;
-				
-				// Extract vertex indices stored as 2-byte values in big-endian
-				// format.  The indices are converted into integer values for OpenGL.
-			
-        do
-        {
-          Integer = (GLuint)(( *(Array + 0) << 8 )
-                             | *(Array + 1) );
-				  Array += 2;
-				  
-          aState.iFaces.push_back( Integer );
-          -- SubCounter;
-        }
-        while ( SubCounter > 0 );
-
-				// Decrement the face counter.
-
-				-- Counter;
-			}
-		}
-
-		// Move to the next block of elements.
-		
-		Block ++;
-	}
-	
-	g_bytes_unref( Data );
-  return;*/
 }
 
 //*------------------------------------------------------------*

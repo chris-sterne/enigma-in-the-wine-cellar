@@ -509,16 +509,21 @@ void CMeshList::Render( const CMapObject& aObject,
     // Do not draw a Player object if it is too close, since this would
     // show the Player mesh object from inside.
 
-    TranslateX -= (GLfloat)KObjectTranslateX[ ObjectSurface ];
-    TranslateY -= (GLfloat)KObjectTranslateY[ ObjectSurface ];
-    TranslateZ -= (GLfloat)KObjectTranslateZ[ ObjectSurface ];
+    GLfloat PlayerX =
+    	TranslateX - (GLfloat)KObjectTranslateX[ ObjectSurface ];
+    
+    GLfloat PlayerY =
+    	TranslateY - (GLfloat)KObjectTranslateY[ ObjectSurface ];
+    
+    GLfloat PlayerZ =
+    	TranslateZ - (GLfloat)KObjectTranslateZ[ ObjectSurface ];
 
-    if  (( TranslateX > -KPlayerLimit )
-      && ( TranslateX < KPlayerLimit )
-      && ( TranslateY > -KPlayerLimit )
-      && ( TranslateY < KPlayerLimit )
-      && ( TranslateZ > -KPlayerLimit )
-      && ( TranslateZ < KPlayerLimit ))
+    if  (( PlayerX > -KPlayerLimit )
+      && ( PlayerX < KPlayerLimit )
+      && ( PlayerY > -KPlayerLimit )
+      && ( PlayerY < KPlayerLimit )
+      && ( PlayerZ > -KPlayerLimit )
+      && ( PlayerZ < KPlayerLimit ))
     {
       return;
     }
@@ -561,8 +566,8 @@ void CMeshList::Render( const CMapObject& aObject,
       RotateX = (GLfloat)atan( DeltaY / DeltaZ ) * ( 180.0 / 3.1416 ); 
       RotateY = (GLfloat)atan( DeltaX / DeltaZ ) * ( 180.0 / 3.1416 );
   
+  		matrix.rotate_x(RotateX);
   		matrix.rotate_y(RotateY);
-      matrix.rotate_z(RotateX);
     }
     
     // Translate the rotated image mesh back to its original location
@@ -599,15 +604,15 @@ void CMeshList::Render( const CMapObject& aObject,
   }
   else if ( aObject.iID == EnigmaWC::ID::EFish )
   {
+    // Apply a small rotation around the center of a Fish object.
+  
+  	matrix.translate(-KFishOffsetX, -KFishOffsetY, 0);
+    matrix.rotate_z((GLfloat)iFishTurn);
+    matrix.translate(KFishOffsetX, KFishOffsetY, 0);
+    
     // Apply a small rotation to a Fish object so it swims around Viewer.
   
     matrix.rotate_z((GLfloat)iFishSwim);
-
-    // Apply a small rotation around the center of a Fish object.
-  
-    matrix.translate(KFishOffsetX, KFishOffsetY, 0);
-    matrix.rotate_z((GLfloat)iFishTurn);
-    matrix.translate(-KFishOffsetX, -KFishOffsetY, 0);
   }
   else if ( aObject.iID == EnigmaWC::ID::EWaterLayer )
   {    
@@ -622,7 +627,6 @@ void CMeshList::Render( const CMapObject& aObject,
   // the view so the object will be oriented properly on its surface.
   
   RotateZ = (GLfloat)KObjectRotateZ[ ObjectSurface ][ ObjectRotation ] * 90;
-  
   matrix.rotate_z(RotateZ);
   
   // Rotate the view so the object is on its surface.  The object will
@@ -630,9 +634,9 @@ void CMeshList::Render( const CMapObject& aObject,
   
   RotateX = (GLfloat)KObjectRotateX[ ObjectSurface ] * 90;
   RotateY = (GLfloat)KObjectRotateY[ ObjectSurface ] * 90;
-          
+
+  matrix.rotate_y(RotateY);          
   matrix.rotate_x(RotateX);
-  matrix.rotate_y(RotateY);
 
 	// Apply all transations.
  	
@@ -645,205 +649,19 @@ void CMeshList::Render( const CMapObject& aObject,
   RotateY = (GLfloat)KViewerRotateY[ ViewerSurface ][ ViewerRotation ] * -90;
   RotateZ = (GLfloat)KViewerRotateZ[ ViewerSurface ] * -90;
 
-  matrix.rotate_y(RotateY);
-  matrix.rotate_z(RotateZ);
   matrix.rotate_x(RotateX);
+  matrix.rotate_z(RotateZ);
+  matrix.rotate_y(RotateY);   
 
   // Apply player fine rotation offset.
 
-  matrix.rotate_x((GLfloat)aViewer.iOffset.iRotateEast * -90);
-  matrix.rotate_y((GLfloat)aViewer.iOffset.iRotateAbove * -90);
   matrix.rotate_z((GLfloat)aViewer.iOffset.iRotateNorth * 90);
-
-/*
-  // [ Transformation #6 ]
-  // Apply player fine rotation offset.
-
+  matrix.rotate_y((GLfloat)aViewer.iOffset.iRotateAbove * -90); 
   matrix.rotate_x((GLfloat)aViewer.iOffset.iRotateEast * -90);
-  matrix.rotate_y((GLfloat)aViewer.iOffset.iRotateAbove * -90);
-  matrix.rotate_z((GLfloat)aViewer.iOffset.iRotateNorth * 90);
 
-  // [ Transformation #4 ]
-  // Rotate the translated view of the object so it appears correctly
-  // to a viewer from the viewer's surface.
+	// Move camera slightly away from viewer.
 
-  RotateX = (GLfloat)KViewerRotateX[ ViewerSurface ] * -90;
-  RotateY = (GLfloat)KViewerRotateY[ ViewerSurface ][ ViewerRotation ] * -90;
-  RotateZ = (GLfloat)KViewerRotateZ[ ViewerSurface ] * -90;
-
-  matrix.rotate_y(RotateY);
-  matrix.rotate_z(RotateZ);
-  matrix.rotate_x(RotateX);
- 
-  // [ Transformation #3 ]
-  // Translate the object within model space.  SkyObjects remain in a fixed
-  // location around the viewer.
-  
-  if ( aObject.iID != EnigmaWC::ID::ESkyObjects )
-  { 
-    TranslateX = (GLfloat)KObjectTranslateX[ ObjectSurface ]
-               + ((gfloat)aViewer.iLocation.iEast  
-               - aObject.iLocation.iEast
-               + aViewer.iOffset.iEast ) * -2;
-               
-    TranslateY = (GLfloat)KObjectTranslateY[ ObjectSurface ]
-               + ((gfloat)aViewer.iLocation.iAbove  
-               - aObject.iLocation.iAbove
-               + aViewer.iOffset.iAbove ) * -2;
-               
-    TranslateZ = (GLfloat)KObjectTranslateZ[ ObjectSurface ]
-               + ((gfloat)aViewer.iLocation.iNorth  
-               - aObject.iLocation.iNorth
-               + aViewer.iOffset.iNorth ) * 2; 
-
-    matrix.translate(TranslateX, TranslateY, TranslateZ);
-  }
-  else
-  {
-    TranslateX = 0;
-    TranslateY = 0;
-    TranslateZ = 0;
-  }
-  
-  // [ Transformation #2 ]
-  // Rotate the view so the object is on its surface.  The object will
-  // appear as it should to a viewer on the Below surface facing North.
-  
-  RotateX = (GLfloat)KObjectRotateX[ ObjectSurface ] * 90;
-  RotateY = (GLfloat)KObjectRotateY[ ObjectSurface ] * 90;
-          
-  matrix.rotate_x(RotateX);
-  matrix.rotate_y(RotateY);
-
-  // [ Transformation #1 ]
-  // All object meshes are drawn centered at the origin (0, 0, 0) on the
-  // model space X-Y plane, rising up along the positive Z axis.  Rotate
-  // the view so the object will be oriented properly on its surface.
-  
-  RotateZ = (GLfloat)KObjectRotateZ[ ObjectSurface ][ ObjectRotation ] * 90;
-
-  matrix.rotate_z(RotateZ);
-
-  if ( aObject.iID == EnigmaWC::ID::EPlayer )
-  {
-    // Do not draw a Player object if it is too close, since this would
-    // show the Player mesh object from inside.
-
-    TranslateX -= (GLfloat)KObjectTranslateX[ ObjectSurface ];
-    TranslateY -= (GLfloat)KObjectTranslateY[ ObjectSurface ];
-    TranslateZ -= (GLfloat)KObjectTranslateZ[ ObjectSurface ];
-
-    if  (( TranslateX > -KPlayerLimit )
-      && ( TranslateX < KPlayerLimit )
-      && ( TranslateY > -KPlayerLimit )
-      && ( TranslateY < KPlayerLimit )
-      && ( TranslateZ > -KPlayerLimit )
-      && ( TranslateZ < KPlayerLimit ))
-    {
-      return;
-    }
-  }
-  else if ( aObject.iID == EnigmaWC::ID::EWallEyes )
-  {
-    // Rotate a WallEyes so it follows the player.
-    
-    // [ WallEyes Transformation #2 ]
-    // Translate the rotated image mesh back to its original location
-    // in the X-Y plane.
-    
-    matrix.translate(KWallEyesOffsetX, KWallEyesOffsetY, KWallEyesOffsetZ);
-
-    // [ WallEyes Transformation #1 ]
-    // Transform the translation values into those for a WallEyes in the
-    // X-Y plane (eyes are in-line along the X-axis).Then rotate the image
-    // mesh about the X and Y axis so the Walleyes face the viewer.
-    
-    GLfloat DeltaX;
-    GLfloat DeltaY;
-    GLfloat DeltaZ;  
-
-    guint8 Index = KTransformIndexes[ ObjectSurface ][ ObjectRotation ];
-    
-    DeltaX = TranslateX * KTransformMatrices[ Index ][ 0 ]
-           + TranslateY * KTransformMatrices[ Index ][ 1 ]
-           + TranslateZ * KTransformMatrices[ Index ][ 2 ]
-           - KWallEyesOffsetX;
-
-    DeltaY = TranslateX * KTransformMatrices[ Index ][ 3 ]
-           + TranslateY * KTransformMatrices[ Index ][ 4 ]
-           + TranslateZ * KTransformMatrices[ Index ][ 5 ]
-           - KWallEyesOffsetY;
-           
-    DeltaZ = TranslateX * KTransformMatrices[ Index ][ 6 ]
-           + TranslateY * KTransformMatrices[ Index ][ 7 ]
-           + TranslateZ * KTransformMatrices[ Index ][ 8 ]
-           - KWallEyesOffsetZ;
-    
-    if ( DeltaZ != 0 )
-    {
-      RotateX = (GLfloat)atan( DeltaY / DeltaZ ) * ( 180.0 / 3.1416 ); 
-      RotateY = (GLfloat)atan( DeltaX / DeltaZ ) * ( 180.0 / 3.1416 );
-  
-      matrix.rotate_y(RotateY);
-      matrix.rotate_z(RotateX);
-    }
-    
-    // [ WallEyes Transformation #0 ]
-    // Translate the image mesh so the eyes are centered in the X-Y plane
-    // before being rotated.
- 
-    matrix.translate(-KWallEyesOffsetX, -KWallEyesOffsetY, -KWallEyesOffsetZ);
-  }
-  else if ( aObject.iID == EnigmaWC::ID::ELightBeam )
-  {
-    // Do not draw a LightBeam too far out of line with the viewer.
-    
-    GLfloat DeltaX;
-    GLfloat DeltaY;
-
-    guint8 Index = KTransformIndexes[ ObjectSurface ][ ObjectRotation ];
-    
-    DeltaX = TranslateX * KTransformMatrices[ Index ][ 0 ]
-           + TranslateY * KTransformMatrices[ Index ][ 1 ]
-           + TranslateZ * KTransformMatrices[ Index ][ 2 ]
-           - KLightBeamOffsetX;
-
-    DeltaY = TranslateX * KTransformMatrices[ Index ][ 3 ]
-           + TranslateY * KTransformMatrices[ Index ][ 4 ]
-           + TranslateZ * KTransformMatrices[ Index ][ 5 ]
-           - KLightBeamOffsetY;
-           
-    if  (( DeltaX > KLightBeamWidth )
-      || ( DeltaX < -KLightBeamWidth )
-      || ( DeltaY > KLightBeamWidth )
-      || ( DeltaY < -KLightBeamWidth ))
-    {
-      return;
-    }
-  }
-  else if ( aObject.iID == EnigmaWC::ID::EFish )
-  {
-    // Apply a small rotation to a Fish object so it swims around Viewer.
-  
-    matrix.rotate_z((GLfloat)iFishSwim);
-
-    // Apply a small rotation around the center of a Fish object.
-  
-    matrix.translate(KFishOffsetX, KFishOffsetY, 0);
-    matrix.rotate_z((GLfloat)iFishTurn);
-    matrix.translate(-KFishOffsetX, -KFishOffsetY, 0);
-  }
-  else if ( aObject.iID == EnigmaWC::ID::EWaterLayer )
-  {    
-    // Disable back-face culling for the WaterLayer so the underside will be
-    // visible when the player is under it.
-
-    glDisable(GL_CULL_FACE);
-  }
-*/
-
- //TEMP
- matrix.translate(0, 0, CAMERA_OFFSET);
+  matrix.translate(0, 0, CAMERA_OFFSET);
  
   // Pass the transformation matrix to the mTransform uniform.
 

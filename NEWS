@@ -1,14 +1,26 @@
-Version 5.0.1
+Version 5.1.1
 -------------
-June 21, 2021
-Brought older version code into AutoTools and Git.
-Code compiles, but object meshes not not rendering.
+June 23, 2021.
+Fixed other visible player positioning.
+Fixed rendering when player on other surfaces. 
+Near clipping plane still needs adjustment.
 
 Version 5.1.0
 -------------
 June 23, 2021.
 Updated OpenGl code to use shaders and buffer objects.
 Meshes now rendering in PlayerView.
-CellarView startup screen blank for now.
+CellarView startup screen blank for now (can disable in settings).
 All game maps, including some test maps, are provided.
 Sound effects working.
+AboutView uses config.h to get version number.
+
+Version 5.0.1
+-------------
+June 21, 2021
+Brought older version code into AutoTools and Git.
+Code compiles, but object meshes not rendering.
+
+
+
+

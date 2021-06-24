@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([enigma-in-the-wine-cellar], 5.1.0, [chris_sterne@hotmail.com])
+AC_INIT([enigma-in-the-wine-cellar], 5.1.1, [chris_sterne@hotmail.com])
 
 AC_CONFIG_HEADERS([config.h])
 

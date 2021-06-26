@@ -20,6 +20,7 @@ CPlayerView::CPlayerView()
   set_required_version(3, 2);
   set_auto_render(true);
   set_has_depth_buffer(true);
+  set_has_stencil_buffer(true);
   set_use_es(false);
   
   // Initialize instance data.

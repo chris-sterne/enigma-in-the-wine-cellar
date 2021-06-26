@@ -18,6 +18,6 @@
 CWindow::CWindow() : Gtk::ApplicationWindow()
 { 
 	set_title( _("Enigma in the Wine Cellar") );
-  set_default_size( 160*3, 160*3 );
+  set_default_size( 160*3 + 60*3, 160*3 );
   return;
 }

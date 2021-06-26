@@ -323,11 +323,11 @@ static const std::string fragment_shader_code = "FragmentShader.glsl";
 // Perspective projection values.
 
 static const GLfloat NEAR_CLIP     = 1.0f;
-static const GLfloat FAR_CLIP      = 10.0f;
+static const GLfloat FAR_CLIP      = 12.0f;
 static const GLfloat FIELD_OF_VIEW = 60.0f;
-static const GLfloat ASPECT_RATIO  = 1.0f;
+static const GLfloat ASPECT_RATIO  = 1.5f;//1.0f;
 
-static const GLfloat CAMERA_OFFSET = -1.15f;  // Camera offset.
+static const GLfloat CAMERA_OFFSET = -1.0;//-1.15f;  // Camera offset.
 static const GLfloat FULL_ROOM     = 2.0f;    // Width of a world room.
 static const GLfloat HALF_ROOM     = 1.0f;    // Room center to outer walls
 
@@ -662,7 +662,7 @@ void CMeshList::Render( const CMapObject& aObject,
 	// Move camera slightly away from viewer.
 
   matrix.translate(0, 0, CAMERA_OFFSET);
- 
+ 	
   // Pass the transformation matrix to the mTransform uniform.
 
 	glUniformMatrix4fv(imTransform, 1, GL_FALSE, matrix.array());

@@ -1,3 +1,10 @@
+Version 5.1.2
+-------------
+Enabled stencil buffer in PlayerView so outdoor object properly masked.
+Just for interest: Try aspect ratio of 1.5.
+Still not able to avoid passing through mesh of some objects (needs better
+object avoidance paths).
+
 Version 5.1.1
 -------------
 June 23, 2021.

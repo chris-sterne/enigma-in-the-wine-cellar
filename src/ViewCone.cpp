@@ -25,8 +25,6 @@
 #define KInnerTubeOffset        0.45/2  // Offset for InnerTube in use.
 #define KHydrogenBalloonOffset -0.52/2  // Offset for HydrogenBalloon in use.
 
-#define KStairsOffset 0.2               // Idle player offset to avoid Stairs.
-
 // These matrices are used for translating an offset in the player's view
 // space (Right, Up, Front) to an offset (East, Above, North) in map space.
 // Each 3x3 matrix corresponds to a particular map direction, with Right

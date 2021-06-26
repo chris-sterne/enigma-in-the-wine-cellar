@@ -320,14 +320,28 @@ static const char* KMeshNames[ (int)EnigmaWC::ID::TOTAL ] =
 static const std::string vertex_shader_code   = "VertexShader.glsl";
 static const std::string fragment_shader_code = "FragmentShader.glsl";
 
-// Perspective projection values.
+// Perspective projection values (Original values for frustrum function).
 
-static const GLfloat NEAR_CLIP     = 1.0f;
-static const GLfloat FAR_CLIP      = 12.0f;
-static const GLfloat FIELD_OF_VIEW = 60.0f;
-static const GLfloat ASPECT_RATIO  = 1.5f;//1.0f;
+static const GLfloat LEFT_CLIP     = -0.15f;
+static const GLfloat RIGHT_CLIP    = 0.15f;
+static const GLfloat BOTTOM_CLIP   = -0.1f;
+static const GLfloat TOP_CLIP      = 0.1f;
+static const GLfloat NEAR_CLIP     = 0.1f;
+static const GLfloat FAR_CLIP      = 10.0f;
 
-static const GLfloat CAMERA_OFFSET = -1.0;//-1.15f;  // Camera offset.
+static const GLfloat CAMERA_OFFSET = -0.2f;  // Camera offset.
+
+// Perspective projection values (New values for projection function).
+
+//static const GLfloat NEAR_CLIP     = 1.0f;
+//static const GLfloat FAR_CLIP      = 10.0f;
+//static const GLfloat FIELD_OF_VIEW = 60.0f;
+//static const GLfloat ASPECT_RATIO  = 1.0f;
+
+//static const GLfloat CAMERA_OFFSET = -1.15f;  // Camera offset.
+
+// Room geometry.
+
 static const GLfloat FULL_ROOM     = 2.0f;    // Width of a world room.
 static const GLfloat HALF_ROOM     = 1.0f;    // Room center to outer walls
 
@@ -887,8 +901,12 @@ void CMeshList::Initialize()
 	GLint mProjection = glGetUniformLocation(program, "mProjection");	
 	
 	Enigma::Matrix4 matrix;
-	matrix.perspective(FIELD_OF_VIEW, ASPECT_RATIO,
-	                   NEAR_CLIP, FAR_CLIP);
+	//matrix.perspective(FIELD_OF_VIEW, ASPECT_RATIO,
+	  //                 NEAR_CLIP, FAR_CLIP);
+
+	matrix.frustrum(LEFT_CLIP, RIGHT_CLIP,
+	                BOTTOM_CLIP, TOP_CLIP,
+	                NEAR_CLIP, FAR_CLIP);
 
 	glUniformMatrix4fv(mProjection, 1, GL_FALSE, matrix.array());
 }

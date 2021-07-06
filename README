@@ -13,4 +13,4 @@ and then build this package.  No installation is done.  The resulting binary
 file must be run within the src directory using the shell commands:
 
 cd src
-./enigma-in-the-wine-celler
+./enigma-in-the-wine-cellar

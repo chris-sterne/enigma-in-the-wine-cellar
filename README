@@ -4,7 +4,8 @@ ENIGMA IN THE WINE CELLAR
 
 This is an exploration puzzle game played from a first-person point of view.
 Explore rooms and passages to find hidden items.  The original version
-of this game ran on the Palm OS platform.  This version is for Linux OS.
+of this game ran on the Palm OS platform.  This Linux OS version is for
+development or testing only, so will be volatile, buggy, and incomplete.
 
 AUTOTOOLS BUILD PACKAGE
 

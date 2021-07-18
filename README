@@ -16,3 +16,6 @@ file must be run within the src directory using the shell commands:
 
 cd src
 ./enigma-in-the-wine-cellar
+
+If game sounds are desired, the canberra library (libcanberra) will need
+to be installed in the system.

@@ -1,14 +1,21 @@
-/*----------------------------------------------*
- * Program: Enigma in the Wine Cellar           *
- * Version: 5.0.1 for Linux OS                  *
- * File:    AboutView.cpp                       *
- * Date:    November 21, 2016                   *
- * Author:  Chris Sterne                        *
- *                                              *
- * AboutView class.                             *
- *----------------------------------------------*
- * This class displays application information. *
- *----------------------------------------------*/
+// "Enigma in the Wine Cellar" game for Linux.
+// Copyright (C) 2005, 2016, 2021 Chris Sterne <chris_sterne@hotmail.com>
+// 
+// This file is the AboutView class implementation.  The AboutView class
+// displays information about the application (name, version, author, etc.). 
+//
+// This program is free software: you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by the Free
+// Software Foundation, either version 3 of the License, or (at your option)
+// any later version.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+// FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+// more details.
+//
+// You should have received a copy of the GNU General Public License along
+// with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <glibmm/i18n.h>
 #include "config.h"
